@@ -15,16 +15,12 @@
     "assetBundlePatterns": ["**/*"],
     "ios": {
       "supportsTablet": false,
-      "bundleIdentifier": "com.lifeos.app",
-      "infoPlist": {
-        "NSCameraUsageDescription": "Used for profile photos",
-        "NSPhotoLibraryUsageDescription": "Used for profile photos"
-      }
+      "bundleIdentifier": "com.lifeos.app"
     },
     "android": {
       "adaptiveIcon": {
         "foregroundImage": "./assets/images/adaptive-icon.png",
-        "backgroundColor": "#0F0F23"
+        "backgroundColor": "#6366F1"
       },
       "package": "com.lifeos.app",
       "permissions": [
@@ -32,8 +28,7 @@
         "VIBRATE",
         "CAMERA",
         "READ_EXTERNAL_STORAGE",
-        "WRITE_EXTERNAL_STORAGE",
-        "PACKAGE_USAGE_STATS"
+        "WRITE_EXTERNAL_STORAGE"
       ]
     },
     "web": {
@@ -48,8 +43,7 @@
         "expo-notifications",
         {
           "icon": "./assets/images/notification-icon.png",
-          "color": "#6366F1",
-          "sounds": ["./assets/sounds/notification.wav"]
+          "color": "#6366F1"
         }
       ],
       [

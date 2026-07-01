@@ -130,7 +130,6 @@ userSchema.virtual('bmi').get(function () {
   return null;
 });
 
-userSchema.index({ email: 1 });
-userSchema.index({ googleId: 1 });
+// Indexes are already declared with unique: true on the field level
 
 module.exports = mongoose.model('User', userSchema);
