@@ -8,8 +8,6 @@ interface AuthState {
   isAuthenticated: boolean;
   isLoading: boolean;
   error: string | null;
-
-  // Actions
   login: (email: string, password: string) => Promise<void>;
   register: (data: RegisterData) => Promise<void>;
   logout: () => Promise<void>;
@@ -41,41 +39,31 @@ export const useAuthStore = create<AuthState>((set, get) => ({
   login: async (email, password) => {
     set({ isLoading: true, error: null });
     try {
-      const response = await api.post(ENDPOINTS.AUTH.LOGIN, { email, password });
-      const { user, accessToken, refreshToken } = response.data.data;
-
+      const res = await api.post(ENDPOINTS.AUTH.LOGIN, { email, password });
+      const { user, accessToken, refreshToken } = res.data.data;
       await tokenStorage.setTokens(accessToken, refreshToken);
       set({ user, isAuthenticated: true, isLoading: false });
-    } catch (error: any) {
-      set({
-        error: error.response?.data?.message || 'Login failed',
-        isLoading: false,
-      });
-      throw error;
+    } catch (e: any) {
+      set({ error: e.response?.data?.message || 'Login failed', isLoading: false });
+      throw e;
     }
   },
 
   register: async (data) => {
     set({ isLoading: true, error: null });
     try {
-      const response = await api.post(ENDPOINTS.AUTH.REGISTER, data);
-      const { user, accessToken, refreshToken } = response.data.data;
-
+      const res = await api.post(ENDPOINTS.AUTH.REGISTER, data);
+      const { user, accessToken, refreshToken } = res.data.data;
       await tokenStorage.setTokens(accessToken, refreshToken);
       set({ user, isAuthenticated: true, isLoading: false });
-    } catch (error: any) {
-      set({
-        error: error.response?.data?.message || 'Registration failed',
-        isLoading: false,
-      });
-      throw error;
+    } catch (e: any) {
+      set({ error: e.response?.data?.message || 'Registration failed', isLoading: false });
+      throw e;
     }
   },
 
   logout: async () => {
-    try {
-      await api.post(ENDPOINTS.AUTH.LOGOUT);
-    } catch {}
+    try { await api.post(ENDPOINTS.AUTH.LOGOUT); } catch {}
     await tokenStorage.clearTokens();
     set({ user: null, isAuthenticated: false, error: null });
   },
@@ -88,24 +76,18 @@ export const useAuthStore = create<AuthState>((set, get) => ({
         set({ isLoading: false, isAuthenticated: false });
         return;
       }
-
-      const response = await api.get(ENDPOINTS.AUTH.ME);
-      set({
-        user: response.data.data.user,
-        isAuthenticated: true,
-        isLoading: false,
-      });
+      const res = await api.get(ENDPOINTS.AUTH.ME);
+      set({ user: res.data.data.user, isAuthenticated: true, isLoading: false });
     } catch {
-      await tokenStorage.clearTokens();
+      // Clear tokens safely — don't crash if storage unavailable
+      try { await tokenStorage.clearTokens(); } catch {}
       set({ user: null, isAuthenticated: false, isLoading: false });
     }
   },
 
   updateUser: (updates) => {
     const current = get().user;
-    if (current) {
-      set({ user: { ...current, ...updates } });
-    }
+    if (current) set({ user: { ...current, ...updates } });
   },
 
   clearError: () => set({ error: null }),

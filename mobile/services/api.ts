@@ -1,121 +1,124 @@
 import axios, { AxiosInstance, AxiosRequestConfig, AxiosResponse } from 'axios';
-import * as SecureStore from 'expo-secure-store';
+import { Platform } from 'react-native';
 import { API_BASE_URL } from '@/constants/api';
 
 const TOKEN_KEY = 'lifeos_access_token';
 const REFRESH_TOKEN_KEY = 'lifeos_refresh_token';
 
-// Create axios instance
-const apiClient: AxiosInstance = axios.create({
-  baseURL: API_BASE_URL,
-  timeout: 30000,
-  headers: {
-    'Content-Type': 'application/json',
-    Accept: 'application/json',
+// ── Platform-safe storage ──────────────────────────────────────────────────
+// expo-secure-store only works on iOS/Android. Use localStorage on web.
+const storage = {
+  async getItem(key: string): Promise<string | null> {
+    if (Platform.OS === 'web') {
+      try { return localStorage.getItem(key); } catch { return null; }
+    }
+    const SecureStore = await import('expo-secure-store');
+    return SecureStore.getItemAsync(key);
   },
-});
-
-// Token management
-export const tokenStorage = {
-  getAccessToken: () => SecureStore.getItemAsync(TOKEN_KEY),
-  getRefreshToken: () => SecureStore.getItemAsync(REFRESH_TOKEN_KEY),
-  setTokens: async (access: string, refresh: string) => {
-    await SecureStore.setItemAsync(TOKEN_KEY, access);
-    await SecureStore.setItemAsync(REFRESH_TOKEN_KEY, refresh);
+  async setItem(key: string, value: string): Promise<void> {
+    if (Platform.OS === 'web') {
+      try { localStorage.setItem(key, value); } catch {}
+      return;
+    }
+    const SecureStore = await import('expo-secure-store');
+    return SecureStore.setItemAsync(key, value);
   },
-  clearTokens: async () => {
-    await SecureStore.deleteItemAsync(TOKEN_KEY);
-    await SecureStore.deleteItemAsync(REFRESH_TOKEN_KEY);
+  async deleteItem(key: string): Promise<void> {
+    if (Platform.OS === 'web') {
+      try { localStorage.removeItem(key); } catch {}
+      return;
+    }
+    const SecureStore = await import('expo-secure-store');
+    return SecureStore.deleteItemAsync(key);
   },
 };
 
-// Request interceptor: attach token
+// ── Token helpers ──────────────────────────────────────────────────────────
+export const tokenStorage = {
+  getAccessToken: () => storage.getItem(TOKEN_KEY),
+  getRefreshToken: () => storage.getItem(REFRESH_TOKEN_KEY),
+  setTokens: async (access: string, refresh: string) => {
+    await storage.setItem(TOKEN_KEY, access);
+    await storage.setItem(REFRESH_TOKEN_KEY, refresh);
+  },
+  clearTokens: async () => {
+    await storage.deleteItem(TOKEN_KEY);
+    await storage.deleteItem(REFRESH_TOKEN_KEY);
+  },
+};
+
+// ── Axios instance ─────────────────────────────────────────────────────────
+const apiClient: AxiosInstance = axios.create({
+  baseURL: API_BASE_URL,
+  timeout: 30000,
+  headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
+});
+
+// Request: attach token
 apiClient.interceptors.request.use(
   async (config) => {
     const token = await tokenStorage.getAccessToken();
-    if (token) {
-      config.headers.Authorization = `Bearer ${token}`;
-    }
+    if (token) config.headers.Authorization = `Bearer ${token}`;
     return config;
   },
   (error) => Promise.reject(error)
 );
 
-// Response interceptor: handle 401 + refresh token
+// Response: handle 401 + silent refresh
 let isRefreshing = false;
-let failedQueue: Array<{
-  resolve: (token: string) => void;
-  reject: (error: any) => void;
-}> = [];
+let failedQueue: { resolve: (t: string) => void; reject: (e: any) => void }[] = [];
 
 const processQueue = (error: any, token: string | null = null) => {
-  failedQueue.forEach((prom) => {
-    if (error) prom.reject(error);
-    else prom.resolve(token!);
-  });
+  failedQueue.forEach((p) => (error ? p.reject(error) : p.resolve(token!)));
   failedQueue = [];
 };
 
 apiClient.interceptors.response.use(
-  (response: AxiosResponse) => response,
+  (res) => res,
   async (error) => {
-    const originalRequest = error.config;
-
-    if (error.response?.status === 401 && !originalRequest._retry) {
+    const original = error.config;
+    if (error.response?.status === 401 && !original._retry) {
       if (isRefreshing) {
         return new Promise((resolve, reject) => {
           failedQueue.push({ resolve, reject });
-        })
-          .then((token) => {
-            originalRequest.headers.Authorization = `Bearer ${token}`;
-            return apiClient(originalRequest);
-          })
-          .catch((err) => Promise.reject(err));
+        }).then((token) => {
+          original.headers.Authorization = `Bearer ${token}`;
+          return apiClient(original);
+        });
       }
-
-      originalRequest._retry = true;
+      original._retry = true;
       isRefreshing = true;
-
       try {
-        const refreshToken = await tokenStorage.getRefreshToken();
-        if (!refreshToken) throw new Error('No refresh token');
-
-        const response = await axios.post(`${API_BASE_URL}/auth/refresh`, { refreshToken });
-        const { accessToken, refreshToken: newRefresh } = response.data.data;
-
+        const refresh = await tokenStorage.getRefreshToken();
+        if (!refresh) throw new Error('No refresh token');
+        const res = await axios.post(`${API_BASE_URL}/auth/refresh`, { refreshToken: refresh });
+        const { accessToken, refreshToken: newRefresh } = res.data.data;
         await tokenStorage.setTokens(accessToken, newRefresh);
         processQueue(null, accessToken);
-
-        originalRequest.headers.Authorization = `Bearer ${accessToken}`;
-        return apiClient(originalRequest);
-      } catch (refreshError) {
-        processQueue(refreshError, null);
+        original.headers.Authorization = `Bearer ${accessToken}`;
+        return apiClient(original);
+      } catch (e) {
+        processQueue(e, null);
         await tokenStorage.clearTokens();
-        // Navigate to login — handled by auth store
-        return Promise.reject(refreshError);
+        return Promise.reject(e);
       } finally {
         isRefreshing = false;
       }
     }
-
     return Promise.reject(error);
   }
 );
 
-// Generic request helpers
+// ── Generic helpers ────────────────────────────────────────────────────────
 export const api = {
   get: <T = any>(url: string, config?: AxiosRequestConfig) =>
     apiClient.get<any, AxiosResponse<{ success: boolean; data: T; message: string }>>(url, config),
-
   post: <T = any>(url: string, data?: any, config?: AxiosRequestConfig) =>
     apiClient.post<any, AxiosResponse<{ success: boolean; data: T; message: string }>>(url, data, config),
-
   put: <T = any>(url: string, data?: any, config?: AxiosRequestConfig) =>
     apiClient.put<any, AxiosResponse<{ success: boolean; data: T; message: string }>>(url, data, config),
-
   patch: <T = any>(url: string, data?: any, config?: AxiosRequestConfig) =>
     apiClient.patch<any, AxiosResponse<{ success: boolean; data: T; message: string }>>(url, data, config),
-
   delete: <T = any>(url: string, config?: AxiosRequestConfig) =>
     apiClient.delete<any, AxiosResponse<{ success: boolean; data: T; message: string }>>(url, config),
 };
