@@ -3,6 +3,14 @@
     "name": "LifeOS",
     "slug": "lifeos",
     "version": "1.0.0",
+    "runtimeVersion": {
+      "policy": "appVersion"
+    },
+    "extra": {
+      "eas": {
+        "projectId": "cdccc0bb-023d-415a-b455-46d06bb24070"
+      }
+    },
     "orientation": "portrait",
     "icon": "./assets/images/icon.png",
     "scheme": "lifeos",
@@ -12,7 +20,9 @@
       "resizeMode": "contain",
       "backgroundColor": "#0F0F23"
     },
-    "assetBundlePatterns": ["**/*"],
+    "assetBundlePatterns": [
+      "**/*"
+    ],
     "ios": {
       "supportsTablet": false,
       "bundleIdentifier": "com.lifeos.app"
@@ -35,6 +45,7 @@
     ],
     "experiments": {
       "typedRoutes": true
-    }
+    },
+    "owner": "ashishbhartijnvs-organization"
   }
 }

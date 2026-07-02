@@ -72,16 +72,28 @@ const getDashboard = async (req, res, next) => {
     const totalCount = activities.length;
     const routineCompletion = totalCount > 0 ? (completedCount / totalCount) * 100 : 0;
 
+    const waterGoal = waterLog?.goal || user.goals?.waterGoal || 2500;
     const waterScore = waterLog
-      ? Math.min((waterLog.totalAmount / (waterLog.goal || user.goals.waterGoal)) * 100, 100)
+      ? Math.min((waterLog.totalAmount / waterGoal) * 100, 100)
       : 0;
+
+    // Derive exercise score live if not stored
+    const exerciseScore = (dailyScore?.exerciseScore != null)
+      ? dailyScore.exerciseScore
+      : (workoutLogs.length > 0 ? Math.min(Math.round((workoutLogs[0].duration / 45) * 100), 100) : 0);
+
+    // Derive study score live if not stored
+    const studyGoalMin = studyLog?.goal || user.goals?.studyGoal || 120;
+    const studyScore = (dailyScore?.studyScore != null)
+      ? dailyScore.studyScore
+      : (studyLog ? Math.min(Math.round((studyLog.totalDuration / studyGoalMin) * 100), 100) : 0);
 
     const lifeScoreData = calculateLifeScore({
       sleepScore: dailyScore?.sleepScore || 0,
-      exerciseScore: dailyScore?.exerciseScore || workoutLogs.length > 0 ? 80 : 0,
+      exerciseScore,
       mealsScore: dailyScore?.mealsScore || 0,
       waterScore: Math.round(waterScore),
-      studyScore: dailyScore?.studyScore || 0,
+      studyScore,
       screenTimeScore: dailyScore?.screenTimeScore || 50,
       moodScore: dailyScore?.moodScore || 50,
     });

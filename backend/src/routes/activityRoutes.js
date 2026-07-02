@@ -8,14 +8,18 @@ const { protect } = require('../middleware/auth');
 
 router.use(protect);
 
-router.get('/', getActivities);
-router.post('/', createActivity);
-router.put('/:id', updateActivity);
-router.delete('/:id', deleteActivity);
-router.post('/:id/duplicate', duplicateActivity);
-
+// ── Specific routes FIRST (before /:id) ──────────────────────────────────
 router.get('/logs', getDayLogs);
 router.post('/logs/:id/complete', completeActivity);
 router.put('/logs/:logId/status', updateLogStatus);
+
+// ── Collection routes ──────────────────────────────────────────────────────
+router.get('/', getActivities);
+router.post('/', createActivity);
+
+// ── Dynamic param routes LAST ──────────────────────────────────────────────
+router.post('/:id/duplicate', duplicateActivity);
+router.put('/:id', updateActivity);
+router.delete('/:id', deleteActivity);
 
 module.exports = router;

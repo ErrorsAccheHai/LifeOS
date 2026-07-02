@@ -8,6 +8,7 @@ import {
   TouchableOpacityProps,
 } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
+import { Platform } from 'react-native';
 import * as Haptics from 'expo-haptics';
 import { COLORS, GRADIENTS, BORDER_RADIUS, FONT_SIZE } from '@/constants/theme';
 
@@ -55,8 +56,8 @@ const Button: React.FC<ButtonProps> = ({
   const { padding, fontSize, height } = SIZES[size];
 
   const handlePress = () => {
-    if (haptic) {
-      Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+    if (haptic && Platform.OS !== 'web') {
+      Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light).catch(() => {});
     }
     onPress();
   };
