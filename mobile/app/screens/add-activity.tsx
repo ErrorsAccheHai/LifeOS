@@ -13,7 +13,8 @@ import Animated, { FadeInDown } from 'react-native-reanimated';
 import { api } from '@/services/api';
 import { ENDPOINTS } from '@/constants/api';
 import Button from '@/components/ui/Button';
-import { COLORS, GRADIENTS, FONT_SIZE, BORDER_RADIUS, SPACING, CATEGORY_CONFIG } from '@/constants/theme';
+import { CATEGORY_CONFIG } from '@/constants/theme';
+import { useTheme } from '@/context/ThemeContext';
 import type { ActivityCategory } from '@/types';
 
 const ICONS = ['⭐', '🏃', '💪', '📚', '💼', '🧘', '🎮', '🎨', '🎵', '🌟', '🔥', '💡', '🍎', '💧', '😴', '🏊', '🚴', '⚽', '🎯', '🙏', '💰', '📝', '🎓', '🌱'];
@@ -73,8 +74,8 @@ export default function AddActivityScreen() {
 
   const SectionTitle = ({ title }: { title: string }) => (
     <Text style={{
-      color: COLORS.textSecondary,
-      fontSize: FONT_SIZE.xs,
+      color: '#A0A0C0',
+      fontSize: 11,
       fontWeight: '600',
       textTransform: 'uppercase',
       letterSpacing: 0.5,
@@ -88,21 +89,21 @@ export default function AddActivityScreen() {
   return (
     <KeyboardAvoidingView
       behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
-      style={{ flex: 1, backgroundColor: COLORS.background }}
+      style={{ flex: 1, backgroundColor: '#0F0F23' }}
     >
       {/* Header */}
       <LinearGradient
-        colors={[COLORS.backgroundSecondary, COLORS.background]}
-        style={{ paddingTop: insets.top + 8, paddingHorizontal: SPACING.base, paddingBottom: 20 }}
+        colors={['#1A1A2E', '#0F0F23']}
+        style={{ paddingTop: insets.top + 8, paddingHorizontal: 16, paddingBottom: 20 }}
       >
         <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}>
           <TouchableOpacity
             onPress={() => router.back()}
-            style={{ width: 40, height: 40, borderRadius: 20, backgroundColor: COLORS.surface, alignItems: 'center', justifyContent: 'center' }}
+            style={{ width: 40, height: 40, borderRadius: 20, backgroundColor: '#1E1E3A', alignItems: 'center', justifyContent: 'center' }}
           >
-            <Ionicons name="close" size={22} color={COLORS.textPrimary} />
+            <Ionicons name="close" size={22} color={'#FFFFFF'} />
           </TouchableOpacity>
-          <Text style={{ color: COLORS.textPrimary, fontSize: FONT_SIZE.lg, fontWeight: '700' }}>
+          <Text style={{ color: '#FFFFFF', fontSize: 18, fontWeight: '700' }}>
             New Activity
           </Text>
           <View style={{ width: 40 }} />
@@ -113,8 +114,8 @@ export default function AddActivityScreen() {
           style={{
             flexDirection: 'row',
             alignItems: 'center',
-            backgroundColor: COLORS.surface,
-            borderRadius: BORDER_RADIUS.lg,
+            backgroundColor: '#1E1E3A',
+            borderRadius: 16,
             padding: 14,
             marginTop: 16,
             borderWidth: 1,
@@ -135,10 +136,10 @@ export default function AddActivityScreen() {
             <Text style={{ fontSize: 24 }}>{selectedIcon}</Text>
           </View>
           <View>
-            <Text style={{ color: COLORS.textPrimary, fontSize: FONT_SIZE.base, fontWeight: '600' }}>
+            <Text style={{ color: '#FFFFFF', fontSize: 14, fontWeight: '600' }}>
               {name || 'Activity Name'}
             </Text>
-            <Text style={{ color: COLORS.textMuted, fontSize: FONT_SIZE.xs }}>
+            <Text style={{ color: '#606080', fontSize: 11 }}>
               {duration}min • +{xpReward} XP
             </Text>
           </View>
@@ -146,7 +147,7 @@ export default function AddActivityScreen() {
       </LinearGradient>
 
       <ScrollView
-        contentContainerStyle={{ paddingHorizontal: SPACING.base, paddingBottom: 100 }}
+        contentContainerStyle={{ paddingHorizontal: 16, paddingBottom: 100 }}
         showsVerticalScrollIndicator={false}
         keyboardShouldPersistTaps="handled"
       >
@@ -156,14 +157,14 @@ export default function AddActivityScreen() {
           value={name}
           onChangeText={setName}
           placeholder="e.g. Morning Run"
-          placeholderTextColor={COLORS.textMuted}
+          placeholderTextColor={'#606080'}
           style={{
-            backgroundColor: COLORS.surface,
-            borderRadius: BORDER_RADIUS.lg,
+            backgroundColor: '#1E1E3A',
+            borderRadius: 16,
             borderWidth: 1.5,
-            borderColor: name ? COLORS.primary : COLORS.border,
-            color: COLORS.textPrimary,
-            fontSize: FONT_SIZE.base,
+            borderColor: name ? '#6366F1' : '#2D2D5A',
+            color: '#FFFFFF',
+            fontSize: 14,
             padding: 14,
             marginBottom: 4,
           }}
@@ -181,7 +182,7 @@ export default function AddActivityScreen() {
                 height: 46,
                 borderRadius: 13,
                 marginHorizontal: 4,
-                backgroundColor: selectedIcon === icon ? `${selectedColor}25` : COLORS.surface,
+                backgroundColor: selectedIcon === icon ? `${selectedColor}25` : '#1E1E3A',
                 alignItems: 'center',
                 justifyContent: 'center',
                 borderWidth: 1.5,
@@ -234,17 +235,17 @@ export default function AddActivityScreen() {
                   gap: 6,
                   paddingHorizontal: 12,
                   paddingVertical: 7,
-                  borderRadius: BORDER_RADIUS.full,
-                  backgroundColor: isSelected ? `${config.color}25` : COLORS.surface,
+                  borderRadius: 999,
+                  backgroundColor: isSelected ? `${config.color}25` : '#1E1E3A',
                   borderWidth: 1,
-                  borderColor: isSelected ? config.color : COLORS.border,
+                  borderColor: isSelected ? config.color : '#2D2D5A',
                 }}
               >
                 <Text style={{ fontSize: 14 }}>{config.icon}</Text>
                 <Text
                   style={{
-                    color: isSelected ? config.color : COLORS.textMuted,
-                    fontSize: FONT_SIZE.sm,
+                    color: isSelected ? config.color : '#606080',
+                    fontSize: 12,
                     fontWeight: isSelected ? '600' : '400',
                     textTransform: 'capitalize',
                   }}
@@ -260,27 +261,27 @@ export default function AddActivityScreen() {
         <SectionTitle title="Schedule" />
         <View style={{ flexDirection: 'row', gap: 12 }}>
           <View style={{ flex: 1 }}>
-            <Text style={{ color: COLORS.textMuted, fontSize: FONT_SIZE.xs, marginBottom: 8 }}>
+            <Text style={{ color: '#606080', fontSize: 11, marginBottom: 8 }}>
               Scheduled Time
             </Text>
             <TextInput
               value={scheduledTime}
               onChangeText={setScheduledTime}
               placeholder="HH:MM"
-              placeholderTextColor={COLORS.textMuted}
+              placeholderTextColor={'#606080'}
               style={{
-                backgroundColor: COLORS.surface,
-                borderRadius: BORDER_RADIUS.lg,
+                backgroundColor: '#1E1E3A',
+                borderRadius: 16,
                 borderWidth: 1.5,
-                borderColor: COLORS.border,
-                color: COLORS.textPrimary,
-                fontSize: FONT_SIZE.base,
+                borderColor: '#2D2D5A',
+                color: '#FFFFFF',
+                fontSize: 14,
                 padding: 14,
               }}
             />
           </View>
           <View style={{ flex: 1 }}>
-            <Text style={{ color: COLORS.textMuted, fontSize: FONT_SIZE.xs, marginBottom: 8 }}>
+            <Text style={{ color: '#606080', fontSize: 11, marginBottom: 8 }}>
               Duration (min)
             </Text>
             <TextInput
@@ -288,12 +289,12 @@ export default function AddActivityScreen() {
               onChangeText={setDuration}
               keyboardType="numeric"
               style={{
-                backgroundColor: COLORS.surface,
-                borderRadius: BORDER_RADIUS.lg,
+                backgroundColor: '#1E1E3A',
+                borderRadius: 16,
                 borderWidth: 1.5,
-                borderColor: COLORS.border,
-                color: COLORS.textPrimary,
-                fontSize: FONT_SIZE.base,
+                borderColor: '#2D2D5A',
+                color: '#FFFFFF',
+                fontSize: 14,
                 padding: 14,
               }}
             />
@@ -304,24 +305,24 @@ export default function AddActivityScreen() {
         <SectionTitle title="XP & Priority" />
         <View style={{ flexDirection: 'row', gap: 12 }}>
           <View style={{ flex: 1 }}>
-            <Text style={{ color: COLORS.textMuted, fontSize: FONT_SIZE.xs, marginBottom: 8 }}>XP Reward</Text>
+            <Text style={{ color: '#606080', fontSize: 11, marginBottom: 8 }}>XP Reward</Text>
             <TextInput
               value={xpReward}
               onChangeText={setXpReward}
               keyboardType="numeric"
               style={{
-                backgroundColor: COLORS.surface,
-                borderRadius: BORDER_RADIUS.lg,
+                backgroundColor: '#1E1E3A',
+                borderRadius: 16,
                 borderWidth: 1.5,
-                borderColor: COLORS.border,
-                color: COLORS.textPrimary,
-                fontSize: FONT_SIZE.base,
+                borderColor: '#2D2D5A',
+                color: '#FFFFFF',
+                fontSize: 14,
                 padding: 14,
               }}
             />
           </View>
           <View style={{ flex: 1 }}>
-            <Text style={{ color: COLORS.textMuted, fontSize: FONT_SIZE.xs, marginBottom: 8 }}>Priority</Text>
+            <Text style={{ color: '#606080', fontSize: 11, marginBottom: 8 }}>Priority</Text>
             <View style={{ flexDirection: 'row', gap: 6 }}>
               {['low', 'medium', 'high'].map((p) => (
                 <TouchableOpacity
@@ -330,14 +331,14 @@ export default function AddActivityScreen() {
                   style={{
                     flex: 1,
                     padding: 10,
-                    borderRadius: BORDER_RADIUS.md,
-                    backgroundColor: priority === p ? COLORS.primary : COLORS.surface,
+                    borderRadius: 12,
+                    backgroundColor: priority === p ? '#6366F1' : '#1E1E3A',
                     alignItems: 'center',
                     borderWidth: 1,
-                    borderColor: priority === p ? COLORS.primary : COLORS.border,
+                    borderColor: priority === p ? '#6366F1' : '#2D2D5A',
                   }}
                 >
-                  <Text style={{ color: priority === p ? '#fff' : COLORS.textMuted, fontSize: 10, fontWeight: '600', textTransform: 'capitalize' }}>
+                  <Text style={{ color: priority === p ? '#fff' : '#606080', fontSize: 10, fontWeight: '600', textTransform: 'capitalize' }}>
                     {p}
                   </Text>
                 </TouchableOpacity>
@@ -353,15 +354,15 @@ export default function AddActivityScreen() {
           style={{
             flexDirection: 'row',
             alignItems: 'center',
-            backgroundColor: COLORS.surface,
-            borderRadius: BORDER_RADIUS.lg,
+            backgroundColor: '#1E1E3A',
+            borderRadius: 16,
             padding: 16,
             borderWidth: 1,
-            borderColor: enableReminder ? COLORS.primary + '40' : COLORS.border,
+            borderColor: enableReminder ? '#6366F1' + '40' : '#2D2D5A',
           }}
         >
-          <Ionicons name="notifications-outline" size={22} color={COLORS.textSecondary} style={{ marginRight: 12 }} />
-          <Text style={{ flex: 1, color: COLORS.textPrimary, fontSize: FONT_SIZE.base }}>
+          <Ionicons name="notifications-outline" size={22} color={'#A0A0C0'} style={{ marginRight: 12 }} />
+          <Text style={{ flex: 1, color: '#FFFFFF', fontSize: 14 }}>
             Enable Reminder
           </Text>
           <View
@@ -369,7 +370,7 @@ export default function AddActivityScreen() {
               width: 44,
               height: 24,
               borderRadius: 12,
-              backgroundColor: enableReminder ? COLORS.primary : COLORS.surfaceLight,
+              backgroundColor: enableReminder ? '#6366F1' : '#252547',
               alignItems: 'center',
               justifyContent: 'center',
               paddingHorizontal: 2,
@@ -393,7 +394,7 @@ export default function AddActivityScreen() {
           title="Create Activity ✨"
           onPress={handleSubmit}
           loading={loading}
-          gradient={GRADIENTS.primary}
+          gradient={['#6366F1','#8B5CF6']}
           fullWidth
           size="lg"
         />

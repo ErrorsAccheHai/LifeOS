@@ -15,7 +15,7 @@ import { ENDPOINTS } from '@/constants/api';
 import { useAuthStore } from '@/store/authStore';
 import Button from '@/components/ui/Button';
 import ProgressBar from '@/components/ui/ProgressBar';
-import { COLORS, GRADIENTS, FONT_SIZE, BORDER_RADIUS, SPACING } from '@/constants/theme';
+import { useTheme } from '@/context/ThemeContext';
 
 export default function WeightLogScreen() {
   const router = useRouter();
@@ -48,10 +48,10 @@ export default function WeightLogScreen() {
   const bmi = weight ? calculateBMI(Number(weight)) : null;
   const getBMIStatus = (b: number | null) => {
     if (!b) return null;
-    if (b < 18.5) return { label: 'Underweight', color: COLORS.accentBlue };
-    if (b < 25) return { label: 'Normal', color: COLORS.accentEmerald };
-    if (b < 30) return { label: 'Overweight', color: COLORS.accentAmber };
-    return { label: 'Obese', color: COLORS.error };
+    if (b < 18.5) return { label: 'Underweight', color: '#3B82F6' };
+    if (b < 25) return { label: 'Normal', color: '#10B981' };
+    if (b < 30) return { label: 'Overweight', color: '#F59E0B' };
+    return { label: 'Obese', color: '#EF4444' };
   };
 
   const bmiStatus = getBMIStatus(bmi);
@@ -97,26 +97,26 @@ export default function WeightLogScreen() {
   return (
     <KeyboardAvoidingView
       behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
-      style={{ flex: 1, backgroundColor: COLORS.background }}
+      style={{ flex: 1, backgroundColor: '#0F0F23' }}
     >
       <LinearGradient
-        colors={[COLORS.backgroundSecondary, COLORS.background]}
-        style={{ paddingTop: insets.top + 8, paddingHorizontal: SPACING.base, paddingBottom: 20 }}
+        colors={['#1A1A2E', '#0F0F23']}
+        style={{ paddingTop: insets.top + 8, paddingHorizontal: 16, paddingBottom: 20 }}
       >
         <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}>
           <TouchableOpacity
             onPress={() => router.back()}
-            style={{ width: 40, height: 40, borderRadius: 20, backgroundColor: COLORS.surface, alignItems: 'center', justifyContent: 'center' }}
+            style={{ width: 40, height: 40, borderRadius: 20, backgroundColor: '#1E1E3A', alignItems: 'center', justifyContent: 'center' }}
           >
-            <Ionicons name="chevron-down" size={22} color={COLORS.textPrimary} />
+            <Ionicons name="chevron-down" size={22} color={'#FFFFFF'} />
           </TouchableOpacity>
-          <Text style={{ color: COLORS.textPrimary, fontSize: FONT_SIZE.lg, fontWeight: '700' }}>Weight Tracker ⚖️</Text>
+          <Text style={{ color: '#FFFFFF', fontSize: 18, fontWeight: '700' }}>Weight Tracker ⚖️</Text>
           <View style={{ width: 40 }} />
         </View>
       </LinearGradient>
 
       <ScrollView
-        contentContainerStyle={{ paddingHorizontal: SPACING.base, paddingTop: 16, paddingBottom: 80 }}
+        contentContainerStyle={{ paddingHorizontal: 16, paddingTop: 16, paddingBottom: 80 }}
         showsVerticalScrollIndicator={false}
         keyboardShouldPersistTaps="handled"
       >
@@ -125,55 +125,55 @@ export default function WeightLogScreen() {
           <Animated.View entering={FadeInDown.delay(50).duration(400)} style={{ marginBottom: 20 }}>
             <LinearGradient
               colors={['#1E1E3A', '#16163A']}
-              style={{ borderRadius: BORDER_RADIUS.xl, padding: 16 }}
+              style={{ borderRadius: 20, padding: 16 }}
             >
               <View style={{ flexDirection: 'row', justifyContent: 'space-between', marginBottom: 10 }}>
                 <View>
-                  <Text style={{ color: COLORS.textSecondary, fontSize: FONT_SIZE.xs }}>Current</Text>
-                  <Text style={{ color: COLORS.textPrimary, fontSize: FONT_SIZE.xl, fontWeight: '700' }}>
+                  <Text style={{ color: '#A0A0C0', fontSize: 11 }}>Current</Text>
+                  <Text style={{ color: '#FFFFFF', fontSize: 20, fontWeight: '700' }}>
                     {currentW || '--'} kg
                   </Text>
                 </View>
                 <View style={{ alignItems: 'center' }}>
-                  <Text style={{ color: COLORS.textSecondary, fontSize: FONT_SIZE.xs }}>Progress</Text>
-                  <Text style={{ color: COLORS.primary, fontSize: FONT_SIZE.xl, fontWeight: '700' }}>
+                  <Text style={{ color: '#A0A0C0', fontSize: 11 }}>Progress</Text>
+                  <Text style={{ color: '#6366F1', fontSize: 20, fontWeight: '700' }}>
                     {progress}%
                   </Text>
                 </View>
                 <View style={{ alignItems: 'flex-end' }}>
-                  <Text style={{ color: COLORS.textSecondary, fontSize: FONT_SIZE.xs }}>Goal</Text>
-                  <Text style={{ color: COLORS.accentEmerald, fontSize: FONT_SIZE.xl, fontWeight: '700' }}>
+                  <Text style={{ color: '#A0A0C0', fontSize: 11 }}>Goal</Text>
+                  <Text style={{ color: '#10B981', fontSize: 20, fontWeight: '700' }}>
                     {goalW} kg
                   </Text>
                 </View>
               </View>
-              <ProgressBar progress={progress} gradient={GRADIENTS.emerald} height={8} />
+              <ProgressBar progress={progress} gradient={['#10B981','#06B6D4']} height={8} />
             </LinearGradient>
           </Animated.View>
         )}
 
         {/* Weight input */}
         <Animated.View entering={FadeInDown.delay(100).duration(400)} style={{ marginBottom: 16 }}>
-          <Text style={{ color: COLORS.textSecondary, fontSize: FONT_SIZE.sm, fontWeight: '500', marginBottom: 8 }}>
+          <Text style={{ color: '#A0A0C0', fontSize: 12, fontWeight: '500', marginBottom: 8 }}>
             Current Weight (kg) *
           </Text>
-          <View style={{ flexDirection: 'row', alignItems: 'center', backgroundColor: COLORS.surface, borderRadius: BORDER_RADIUS.lg, borderWidth: 1.5, borderColor: weight ? COLORS.primary : COLORS.border }}>
+          <View style={{ flexDirection: 'row', alignItems: 'center', backgroundColor: '#1E1E3A', borderRadius: 16, borderWidth: 1.5, borderColor: weight ? '#6366F1' : '#2D2D5A' }}>
             <TextInput
               value={weight}
               onChangeText={setWeight}
               placeholder="e.g. 70.5"
-              placeholderTextColor={COLORS.textMuted}
+              placeholderTextColor={'#606080'}
               keyboardType="decimal-pad"
-              style={{ flex: 1, color: COLORS.textPrimary, fontSize: 28, fontWeight: '700', padding: 16, textAlign: 'center' }}
+              style={{ flex: 1, color: '#FFFFFF', fontSize: 28, fontWeight: '700', padding: 16, textAlign: 'center' }}
             />
-            <Text style={{ color: COLORS.textMuted, fontSize: FONT_SIZE.lg, paddingRight: 16 }}>kg</Text>
+            <Text style={{ color: '#606080', fontSize: 18, paddingRight: 16 }}>kg</Text>
           </View>
 
           {bmi && bmiStatus && (
             <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8, marginTop: 8, justifyContent: 'center' }}>
-              <Text style={{ color: COLORS.textMuted, fontSize: FONT_SIZE.sm }}>BMI: </Text>
-              <Text style={{ color: bmiStatus.color, fontSize: FONT_SIZE.base, fontWeight: '700' }}>{bmi}</Text>
-              <Text style={{ color: bmiStatus.color, fontSize: FONT_SIZE.sm }}>• {bmiStatus.label}</Text>
+              <Text style={{ color: '#606080', fontSize: 12 }}>BMI: </Text>
+              <Text style={{ color: bmiStatus.color, fontSize: 14, fontWeight: '700' }}>{bmi}</Text>
+              <Text style={{ color: bmiStatus.color, fontSize: 12 }}>• {bmiStatus.label}</Text>
             </View>
           )}
         </Animated.View>
@@ -181,37 +181,37 @@ export default function WeightLogScreen() {
         {/* Optional measurements */}
         <Animated.View entering={FadeInDown.delay(150).duration(400)} style={{ flexDirection: 'row', gap: 12, marginBottom: 16 }}>
           <View style={{ flex: 1 }}>
-            <Text style={{ color: COLORS.textMuted, fontSize: FONT_SIZE.xs, marginBottom: 8 }}>Body Fat (%)</Text>
+            <Text style={{ color: '#606080', fontSize: 11, marginBottom: 8 }}>Body Fat (%)</Text>
             <TextInput
               value={bodyFat}
               onChangeText={setBodyFat}
               placeholder="Optional"
-              placeholderTextColor={COLORS.textMuted}
+              placeholderTextColor={'#606080'}
               keyboardType="decimal-pad"
-              style={{ backgroundColor: COLORS.surface, borderRadius: BORDER_RADIUS.lg, borderWidth: 1.5, borderColor: COLORS.border, color: COLORS.textPrimary, fontSize: FONT_SIZE.base, padding: 14 }}
+              style={{ backgroundColor: '#1E1E3A', borderRadius: 16, borderWidth: 1.5, borderColor: '#2D2D5A', color: '#FFFFFF', fontSize: 14, padding: 14 }}
             />
           </View>
           <View style={{ flex: 1 }}>
-            <Text style={{ color: COLORS.textMuted, fontSize: FONT_SIZE.xs, marginBottom: 8 }}>Waist (cm)</Text>
+            <Text style={{ color: '#606080', fontSize: 11, marginBottom: 8 }}>Waist (cm)</Text>
             <TextInput
               value={waist}
               onChangeText={setWaist}
               placeholder="Optional"
-              placeholderTextColor={COLORS.textMuted}
+              placeholderTextColor={'#606080'}
               keyboardType="decimal-pad"
-              style={{ backgroundColor: COLORS.surface, borderRadius: BORDER_RADIUS.lg, borderWidth: 1.5, borderColor: COLORS.border, color: COLORS.textPrimary, fontSize: FONT_SIZE.base, padding: 14 }}
+              style={{ backgroundColor: '#1E1E3A', borderRadius: 16, borderWidth: 1.5, borderColor: '#2D2D5A', color: '#FFFFFF', fontSize: 14, padding: 14 }}
             />
           </View>
         </Animated.View>
 
         <Animated.View entering={FadeInDown.delay(200).duration(400)} style={{ marginBottom: 24 }}>
-          <Text style={{ color: COLORS.textMuted, fontSize: FONT_SIZE.xs, marginBottom: 8 }}>Notes</Text>
+          <Text style={{ color: '#606080', fontSize: 11, marginBottom: 8 }}>Notes</Text>
           <TextInput
             value={notes}
             onChangeText={setNotes}
             placeholder="How are you feeling?"
-            placeholderTextColor={COLORS.textMuted}
-            style={{ backgroundColor: COLORS.surface, borderRadius: BORDER_RADIUS.lg, borderWidth: 1.5, borderColor: COLORS.border, color: COLORS.textPrimary, fontSize: FONT_SIZE.base, padding: 14 }}
+            placeholderTextColor={'#606080'}
+            style={{ backgroundColor: '#1E1E3A', borderRadius: 16, borderWidth: 1.5, borderColor: '#2D2D5A', color: '#FFFFFF', fontSize: 14, padding: 14 }}
           />
         </Animated.View>
 
@@ -219,7 +219,7 @@ export default function WeightLogScreen() {
           title="Log Weight ⚖️"
           onPress={handleSubmit}
           loading={loading}
-          gradient={GRADIENTS.primary}
+          gradient={['#6366F1','#8B5CF6']}
           fullWidth
           size="lg"
         />
@@ -227,7 +227,7 @@ export default function WeightLogScreen() {
         {/* History */}
         {history.length > 0 && (
           <View style={{ marginTop: 32 }}>
-            <Text style={{ color: COLORS.textPrimary, fontSize: FONT_SIZE.base, fontWeight: '700', marginBottom: 14 }}>
+            <Text style={{ color: '#FFFFFF', fontSize: 14, fontWeight: '700', marginBottom: 14 }}>
               Recent History
             </Text>
             {history.slice(-5).reverse().map((log) => (
@@ -236,18 +236,18 @@ export default function WeightLogScreen() {
                 style={{
                   flexDirection: 'row',
                   justifyContent: 'space-between',
-                  backgroundColor: COLORS.surface,
-                  borderRadius: BORDER_RADIUS.lg,
+                  backgroundColor: '#1E1E3A',
+                  borderRadius: 16,
                   padding: 14,
                   marginBottom: 10,
                 }}
               >
-                <Text style={{ color: COLORS.textSecondary, fontSize: FONT_SIZE.sm }}>{log.date}</Text>
-                <Text style={{ color: COLORS.textPrimary, fontSize: FONT_SIZE.base, fontWeight: '700' }}>
+                <Text style={{ color: '#A0A0C0', fontSize: 12 }}>{log.date}</Text>
+                <Text style={{ color: '#FFFFFF', fontSize: 14, fontWeight: '700' }}>
                   {log.weight} kg
                 </Text>
                 {log.bmi && (
-                  <Text style={{ color: COLORS.textMuted, fontSize: FONT_SIZE.sm }}>BMI: {log.bmi}</Text>
+                  <Text style={{ color: '#606080', fontSize: 12 }}>BMI: {log.bmi}</Text>
                 )}
               </View>
             ))}

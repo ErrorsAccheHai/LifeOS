@@ -2,9 +2,10 @@ import React from 'react';
 import { View, Text, TouchableOpacity } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import Animated, { FadeInDown } from 'react-native-reanimated';
-import { COLORS, BORDER_RADIUS, FONT_SIZE, SHADOWS } from '@/constants/theme';
+import * as Haptics from 'expo-haptics';
+import { useTheme } from '@/context/ThemeContext';
 
-interface QuickStatCardProps {
+interface Props {
   title: string;
   value: string;
   unit?: string;
@@ -16,96 +17,78 @@ interface QuickStatCardProps {
   delay?: number;
 }
 
-const QuickStatCard: React.FC<QuickStatCardProps> = ({
-  title,
-  value,
-  unit,
-  subtitle,
-  icon,
-  gradient,
-  progress,
-  onPress,
-  delay = 0,
+const QuickStatCard: React.FC<Props> = ({
+  title, value, unit, subtitle, icon, gradient, progress, onPress, delay = 0,
 }) => {
+  const { colors } = useTheme();
+
+  const handlePress = () => {
+    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+    onPress?.();
+  };
+
   return (
     <Animated.View entering={FadeInDown.delay(delay).duration(500)} style={{ flex: 1 }}>
-      <TouchableOpacity onPress={onPress} activeOpacity={0.85} style={SHADOWS.sm}>
-        <LinearGradient
-          colors={['#1E1E3A', '#16163A']}
-          style={{
-            borderRadius: BORDER_RADIUS.xl,
-            padding: 14,
-            borderWidth: 1,
-            borderColor: 'rgba(255,255,255,0.06)',
-          }}
-        >
+      <TouchableOpacity
+        onPress={handlePress}
+        activeOpacity={0.85}
+        style={{
+          shadowColor: gradient[0],
+          shadowOffset: { width: 0, height: 2 },
+          shadowOpacity: 0.1,
+          shadowRadius: 4,
+          elevation: 2,
+        }}
+      >
+        <View style={{
+          backgroundColor: colors.surface,
+          borderRadius: 20, padding: 14,
+          borderWidth: 1, borderColor: colors.glassBorder,
+        }}>
           {/* Icon */}
           <LinearGradient
-            colors={gradient}
+            colors={gradient as any}
             style={{
-              width: 36,
-              height: 36,
-              borderRadius: 10,
-              alignItems: 'center',
-              justifyContent: 'center',
-              marginBottom: 10,
+              width: 38, height: 38, borderRadius: 11,
+              alignItems: 'center', justifyContent: 'center', marginBottom: 10,
             }}
           >
             <Text style={{ fontSize: 18 }}>{icon}</Text>
           </LinearGradient>
 
           {/* Value */}
-          <Text
-            style={{
-              color: COLORS.textPrimary,
-              fontSize: FONT_SIZE.xl,
-              fontWeight: '700',
-              lineHeight: 24,
-            }}
-          >
+          <Text style={{ color: colors.textPrimary, fontSize: 20, fontWeight: '700', lineHeight: 24 }}>
             {value}
             {unit && (
-              <Text style={{ color: COLORS.textMuted, fontSize: FONT_SIZE.sm, fontWeight: '400' }}>
+              <Text style={{ color: colors.textMuted, fontSize: 12, fontWeight: '400' }}>
                 {' '}{unit}
               </Text>
             )}
           </Text>
 
           {/* Title */}
-          <Text style={{ color: COLORS.textSecondary, fontSize: FONT_SIZE.xs, marginTop: 2 }}>
-            {title}
-          </Text>
+          <Text style={{ color: colors.textSecondary, fontSize: 11, marginTop: 2 }}>{title}</Text>
 
-          {/* Progress bar (optional) */}
+          {/* Progress bar */}
           {progress !== undefined && (
-            <View
-              style={{
-                height: 3,
-                backgroundColor: COLORS.surfaceLighter,
-                borderRadius: 2,
-                marginTop: 10,
-                overflow: 'hidden',
-              }}
-            >
+            <View style={{
+              height: 3, backgroundColor: colors.surfaceLighter,
+              borderRadius: 2, marginTop: 10, overflow: 'hidden',
+            }}>
               <LinearGradient
-                colors={gradient}
-                start={{ x: 0, y: 0 }}
-                end={{ x: 1, y: 0 }}
-                style={{
-                  height: '100%',
-                  width: `${Math.min(progress, 100)}%`,
-                  borderRadius: 2,
-                }}
+                colors={gradient as any}
+                start={{ x: 0, y: 0 }} end={{ x: 1, y: 0 }}
+                style={{ height: '100%', width: `${Math.min(progress, 100)}%`, borderRadius: 2 }}
               />
             </View>
           )}
 
           {subtitle && (
-            <Text style={{ color: COLORS.textMuted, fontSize: 10, marginTop: 4 }}>
+            <Text style={{ color: colors.textMuted, fontSize: 10, marginTop: 4 }}>
               {subtitle}
             </Text>
           )}
-        </LinearGradient>
+        </View>
       </TouchableOpacity>
     </Animated.View>
   );

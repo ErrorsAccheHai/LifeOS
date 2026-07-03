@@ -1,15 +1,15 @@
-import React, { useEffect, useRef } from 'react';
+import React, { useEffect } from 'react';
 import { View, Text, ViewStyle } from 'react-native';
 import Svg, { Circle, Defs, LinearGradient, Stop } from 'react-native-svg';
 import Animated, {
   useSharedValue, useAnimatedProps, withTiming, Easing,
 } from 'react-native-reanimated';
-import { COLORS, FONT_SIZE } from '@/constants/theme';
+import { useTheme } from '@/context/ThemeContext';
 
 const AnimatedCircle = Animated.createAnimatedComponent(Circle);
 
 interface ProgressRingProps {
-  progress: number; // 0-100
+  progress: number;
   size?: number;
   strokeWidth?: number;
   color?: string;
@@ -23,40 +23,30 @@ interface ProgressRingProps {
 }
 
 const ProgressRing: React.FC<ProgressRingProps> = ({
-  progress,
-  size = 80,
-  strokeWidth = 8,
-  color = COLORS.primary,
-  trackColor = COLORS.surfaceLight,
-  gradient,
-  children,
-  label,
-  value,
-  style,
-  animated = true,
+  progress, size = 80, strokeWidth = 8,
+  color, trackColor, gradient,
+  children, label, value, style, animated = true,
 }) => {
+  const { colors } = useTheme();
+  const resolvedColor = color || colors.primary;
+  const resolvedTrack = trackColor || colors.surfaceLight;
+
   const radius = (size - strokeWidth) / 2;
   const circumference = 2 * Math.PI * radius;
   const animatedProgress = useSharedValue(0);
 
   useEffect(() => {
-    const clampedProgress = Math.min(Math.max(progress, 0), 100);
-    if (animated) {
-      animatedProgress.value = withTiming(clampedProgress, {
-        duration: 1000,
-        easing: Easing.out(Easing.cubic),
-      });
-    } else {
-      animatedProgress.value = clampedProgress;
-    }
+    const clamped = Math.min(Math.max(progress, 0), 100);
+    animatedProgress.value = animated
+      ? withTiming(clamped, { duration: 1000, easing: Easing.out(Easing.cubic) })
+      : clamped;
   }, [progress]);
 
-  const animatedProps = useAnimatedProps(() => {
-    const strokeDashoffset = circumference - (animatedProgress.value / 100) * circumference;
-    return { strokeDashoffset };
-  });
+  const animatedProps = useAnimatedProps(() => ({
+    strokeDashoffset: circumference - (animatedProgress.value / 100) * circumference,
+  }));
 
-  const gradientId = `grad-${Math.random().toString(36).substr(2, 9)}`;
+  const gradientId = `grad-ring-${size}`;
 
   return (
     <View style={[{ width: size, height: size, alignItems: 'center', justifyContent: 'center' }, style]}>
@@ -69,23 +59,11 @@ const ProgressRing: React.FC<ProgressRingProps> = ({
             </LinearGradient>
           </Defs>
         )}
-        {/* Track */}
-        <Circle
-          cx={size / 2}
-          cy={size / 2}
-          r={radius}
-          stroke={trackColor}
-          strokeWidth={strokeWidth}
-          fill="none"
-        />
-        {/* Progress */}
+        <Circle cx={size / 2} cy={size / 2} r={radius} stroke={resolvedTrack} strokeWidth={strokeWidth} fill="none" />
         <AnimatedCircle
-          cx={size / 2}
-          cy={size / 2}
-          r={radius}
-          stroke={gradient ? `url(#${gradientId})` : color}
-          strokeWidth={strokeWidth}
-          fill="none"
+          cx={size / 2} cy={size / 2} r={radius}
+          stroke={gradient ? `url(#${gradientId})` : resolvedColor}
+          strokeWidth={strokeWidth} fill="none"
           strokeDasharray={circumference}
           animatedProps={animatedProps}
           strokeLinecap="round"
@@ -93,20 +71,11 @@ const ProgressRing: React.FC<ProgressRingProps> = ({
           origin={`${size / 2}, ${size / 2}`}
         />
       </Svg>
-
       <View style={{ alignItems: 'center', justifyContent: 'center' }}>
         {children || (
           <>
-            {value && (
-              <Text style={{ color: COLORS.textPrimary, fontSize: FONT_SIZE.base, fontWeight: '700' }}>
-                {value}
-              </Text>
-            )}
-            {label && (
-              <Text style={{ color: COLORS.textMuted, fontSize: FONT_SIZE.xs, marginTop: 2 }}>
-                {label}
-              </Text>
-            )}
+            {value && <Text style={{ color: colors.textPrimary, fontSize: 14, fontWeight: '700' }}>{value}</Text>}
+            {label && <Text style={{ color: colors.textMuted, fontSize: 11, marginTop: 2 }}>{label}</Text>}
           </>
         )}
       </View>

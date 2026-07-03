@@ -1,16 +1,11 @@
 import React from 'react';
 import {
-  TouchableOpacity,
-  Text,
-  ActivityIndicator,
-  ViewStyle,
-  TextStyle,
-  TouchableOpacityProps,
+  TouchableOpacity, Text, ActivityIndicator,
+  ViewStyle, TextStyle, TouchableOpacityProps, Platform,
 } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
-import { Platform } from 'react-native';
 import * as Haptics from 'expo-haptics';
-import { COLORS, GRADIENTS, BORDER_RADIUS, FONT_SIZE } from '@/constants/theme';
+import { useTheme } from '@/context/ThemeContext';
 
 type ButtonVariant = 'primary' | 'secondary' | 'outline' | 'ghost' | 'danger' | 'success';
 type ButtonSize = 'sm' | 'md' | 'lg';
@@ -31,28 +26,18 @@ interface ButtonProps extends TouchableOpacityProps {
   haptic?: boolean;
 }
 
-const SIZES: Record<ButtonSize, { padding: number; fontSize: number; height: number }> = {
-  sm: { padding: 12, fontSize: FONT_SIZE.sm, height: 36 },
-  md: { padding: 16, fontSize: FONT_SIZE.base, height: 48 },
-  lg: { padding: 20, fontSize: FONT_SIZE.md, height: 56 },
+const SIZES = {
+  sm: { padding: 12, fontSize: 12, height: 36 },
+  md: { padding: 16, fontSize: 14, height: 48 },
+  lg: { padding: 20, fontSize: 16, height: 56 },
 };
 
 const Button: React.FC<ButtonProps> = ({
-  title,
-  onPress,
-  variant = 'primary',
-  size = 'md',
-  loading = false,
-  disabled = false,
-  icon,
-  iconPosition = 'left',
-  style,
-  textStyle,
-  fullWidth = false,
-  gradient,
-  haptic = true,
-  ...props
+  title, onPress, variant = 'primary', size = 'md',
+  loading = false, disabled = false, icon, iconPosition = 'left',
+  style, textStyle, fullWidth = false, gradient, haptic = true, ...props
 }) => {
+  const { colors } = useTheme();
   const { padding, fontSize, height } = SIZES[size];
 
   const handlePress = () => {
@@ -63,53 +48,36 @@ const Button: React.FC<ButtonProps> = ({
   };
 
   const baseStyle: ViewStyle = {
-    height,
-    borderRadius: BORDER_RADIUS.xl,
-    alignItems: 'center',
-    justifyContent: 'center',
-    flexDirection: 'row',
-    paddingHorizontal: padding,
+    height, borderRadius: 20, alignItems: 'center', justifyContent: 'center',
+    flexDirection: 'row', paddingHorizontal: padding,
     opacity: disabled || loading ? 0.6 : 1,
     width: fullWidth ? '100%' : undefined,
   };
 
-  const textColor = variant === 'outline' || variant === 'ghost'
-    ? COLORS.primary
-    : COLORS.textPrimary;
+  const textColor = variant === 'outline' || variant === 'ghost' ? colors.primary : '#fff';
 
-  const variantStyle: ViewStyle = {
-    primary: { backgroundColor: COLORS.primary },
-    secondary: { backgroundColor: COLORS.surfaceLight },
-    outline: { backgroundColor: 'transparent', borderWidth: 1.5, borderColor: COLORS.primary },
-    ghost: { backgroundColor: 'transparent' },
-    danger: { backgroundColor: COLORS.error },
-    success: { backgroundColor: COLORS.success },
-  }[variant];
+  const variantStyles: Record<ButtonVariant, ViewStyle> = {
+    primary:   { backgroundColor: colors.primary },
+    secondary: { backgroundColor: colors.surfaceLight },
+    outline:   { backgroundColor: 'transparent', borderWidth: 1.5, borderColor: colors.primary },
+    ghost:     { backgroundColor: 'transparent' },
+    danger:    { backgroundColor: '#EF4444' },
+    success:   { backgroundColor: '#10B981' },
+  };
 
-  const buttonContent = (
+  const content = loading ? (
+    <ActivityIndicator color={textColor} size="small" />
+  ) : (
     <>
-      {loading ? (
-        <ActivityIndicator color={textColor} size="small" />
-      ) : (
-        <>
-          {icon && iconPosition === 'left' && icon}
-          <Text
-            style={[
-              {
-                fontSize,
-                fontWeight: '600',
-                color: textColor,
-                marginLeft: icon && iconPosition === 'left' ? 8 : 0,
-                marginRight: icon && iconPosition === 'right' ? 8 : 0,
-              },
-              textStyle,
-            ]}
-          >
-            {title}
-          </Text>
-          {icon && iconPosition === 'right' && icon}
-        </>
-      )}
+      {icon && iconPosition === 'left' && icon}
+      <Text style={[{
+        fontSize, fontWeight: '600', color: textColor,
+        marginLeft: icon && iconPosition === 'left' ? 8 : 0,
+        marginRight: icon && iconPosition === 'right' ? 8 : 0,
+      }, textStyle]}>
+        {title}
+      </Text>
+      {icon && iconPosition === 'right' && icon}
     </>
   );
 
@@ -119,16 +87,15 @@ const Button: React.FC<ButtonProps> = ({
         onPress={handlePress}
         disabled={disabled || loading}
         activeOpacity={0.85}
-        style={[baseStyle, { padding: 0 }, style]}
+        style={[baseStyle, { padding: 0, overflow: 'hidden' }, style]}
         {...props}
       >
         <LinearGradient
           colors={gradient}
-          start={{ x: 0, y: 0 }}
-          end={{ x: 1, y: 0 }}
+          start={{ x: 0, y: 0 }} end={{ x: 1, y: 0 }}
           style={[baseStyle, { width: '100%' }]}
         >
-          {buttonContent}
+          {content}
         </LinearGradient>
       </TouchableOpacity>
     );
@@ -139,10 +106,10 @@ const Button: React.FC<ButtonProps> = ({
       onPress={handlePress}
       disabled={disabled || loading}
       activeOpacity={0.85}
-      style={[baseStyle, variantStyle, style]}
+      style={[baseStyle, variantStyles[variant], style]}
       {...props}
     >
-      {buttonContent}
+      {content}
     </TouchableOpacity>
   );
 };

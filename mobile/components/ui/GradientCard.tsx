@@ -1,7 +1,7 @@
 import React from 'react';
 import { View, ViewStyle, TouchableOpacity, TouchableOpacityProps } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
-import { COLORS, BORDER_RADIUS, SHADOWS } from '@/constants/theme';
+import { useTheme } from '@/context/ThemeContext';
 
 interface GradientCardProps extends TouchableOpacityProps {
   children: React.ReactNode;
@@ -30,7 +30,7 @@ const GradientCard: React.FC<GradientCardProps> = ({
       end={{ x: 1, y: 1 }}
       style={[
         {
-          borderRadius: BORDER_RADIUS.xl,
+          borderRadius: 20,
           padding: 16,
           overflow: 'hidden',
         },
@@ -43,11 +43,11 @@ const GradientCard: React.FC<GradientCardProps> = ({
     <View
       style={[
         {
-          borderRadius: BORDER_RADIUS.xl,
+          borderRadius: 20,
           padding: 16,
-          backgroundColor: glass ? COLORS.glass : COLORS.surface,
+          backgroundColor: glass ? 'rgba(255,255,255,0.05)' : '#1E1E3A',
           borderWidth: glass ? 1 : 0,
-          borderColor: glass ? COLORS.glassBorder : 'transparent',
+          borderColor: glass ? 'rgba(255,255,255,0.05)'Border : 'transparent',
         },
         innerStyle,
       ]}
@@ -61,7 +61,7 @@ const GradientCard: React.FC<GradientCardProps> = ({
       <TouchableOpacity
         onPress={onPress}
         activeOpacity={0.85}
-        style={[shadow ? SHADOWS.md : undefined, style]}
+        style={[shadow ? { shadowColor: '#6366F1', shadowOffset: { width: 0, height: 4 }, shadowOpacity: 0.15, shadowRadius: 8, elevation: 4 } : undefined, style]}
         {...props}
       >
         {content}
@@ -70,7 +70,7 @@ const GradientCard: React.FC<GradientCardProps> = ({
   }
 
   return (
-    <View style={[shadow ? SHADOWS.md : undefined, style]}>
+    <View style={[shadow ? { shadowColor: '#6366F1', shadowOffset: { width: 0, height: 4 }, shadowOpacity: 0.15, shadowRadius: 8, elevation: 4 } : undefined, style]}>
       {content}
     </View>
   );

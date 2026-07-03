@@ -13,7 +13,7 @@ import { api } from '@/services/api';
 import { ENDPOINTS } from '@/constants/api';
 import Button from '@/components/ui/Button';
 import ProgressRing from '@/components/ui/ProgressRing';
-import { COLORS, GRADIENTS, FONT_SIZE, BORDER_RADIUS, SPACING } from '@/constants/theme';
+import { useTheme } from '@/context/ThemeContext';
 import type { StudyLog } from '@/types';
 
 const POMODORO_DURATION = 25 * 60; // 25 minutes in seconds
@@ -185,10 +185,10 @@ export default function StudyTrackerScreen() {
   const goalProgress = Math.min((((todayLog?.totalDuration || 0) / goal) * 100), 100);
 
   return (
-    <View style={{ flex: 1, backgroundColor: COLORS.background }}>
+    <View style={{ flex: 1, backgroundColor: '#0F0F23' }}>
       <LinearGradient
-        colors={['#0F0F2A', COLORS.background]}
-        style={{ paddingTop: insets.top + 8, paddingHorizontal: SPACING.base, paddingBottom: 24 }}
+        colors={['#0F0F2A', '#0F0F23']}
+        style={{ paddingTop: insets.top + 8, paddingHorizontal: 16, paddingBottom: 24 }}
       >
         <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', marginBottom: 24 }}>
           <TouchableOpacity
@@ -197,7 +197,7 @@ export default function StudyTrackerScreen() {
           >
             <Ionicons name="chevron-down" size={22} color="#fff" />
           </TouchableOpacity>
-          <Text style={{ color: '#fff', fontSize: FONT_SIZE.lg, fontWeight: '700' }}>Study Tracker 📚</Text>
+          <Text style={{ color: '#fff', fontSize: 18, fontWeight: '700' }}>Study Tracker 📚</Text>
           <View style={{ width: 40 }} />
         </View>
 
@@ -214,7 +214,7 @@ export default function StudyTrackerScreen() {
               <Text style={{ color: '#fff', fontSize: 40, fontWeight: '800', letterSpacing: -1 }}>
                 {formatTime(timerSeconds)}
               </Text>
-              <Text style={{ color: 'rgba(255,255,255,0.6)', fontSize: FONT_SIZE.xs, textTransform: 'capitalize' }}>
+              <Text style={{ color: 'rgba(255,255,255,0.6)', fontSize: 11, textTransform: 'capitalize' }}>
                 {timerMode.replace('_', ' ')}
               </Text>
             </View>
@@ -234,11 +234,11 @@ export default function StudyTrackerScreen() {
               style={{
                 paddingHorizontal: 12,
                 paddingVertical: 7,
-                borderRadius: BORDER_RADIUS.full,
+                borderRadius: 999,
                 backgroundColor: timerMode === item.mode ? 'rgba(255,255,255,0.15)' : 'transparent',
               }}
             >
-              <Text style={{ color: 'rgba(255,255,255,0.8)', fontSize: FONT_SIZE.sm }}>
+              <Text style={{ color: 'rgba(255,255,255,0.8)', fontSize: 12 }}>
                 {item.label}
               </Text>
             </TouchableOpacity>
@@ -255,12 +255,12 @@ export default function StudyTrackerScreen() {
           </TouchableOpacity>
           <TouchableOpacity
             onPress={timerRunning ? pauseTimer : startTimer}
-            style={{ width: 60, height: 60, borderRadius: 30, backgroundColor: COLORS.primary, alignItems: 'center', justifyContent: 'center' }}
+            style={{ width: 60, height: 60, borderRadius: 30, backgroundColor: '#6366F1', alignItems: 'center', justifyContent: 'center' }}
           >
             <Ionicons name={timerRunning ? 'pause' : 'play'} size={26} color="#fff" />
           </TouchableOpacity>
           <View style={{ width: 44, height: 44, borderRadius: 22, backgroundColor: 'rgba(255,255,255,0.1)', alignItems: 'center', justifyContent: 'center' }}>
-            <Text style={{ color: '#fff', fontSize: FONT_SIZE.sm, fontWeight: '700' }}>
+            <Text style={{ color: '#fff', fontSize: 12, fontWeight: '700' }}>
               🍅{pomodoroCount}
             </Text>
           </View>
@@ -268,44 +268,44 @@ export default function StudyTrackerScreen() {
       </LinearGradient>
 
       <ScrollView
-        contentContainerStyle={{ paddingHorizontal: SPACING.base, paddingTop: 20, paddingBottom: 80 }}
+        contentContainerStyle={{ paddingHorizontal: 16, paddingTop: 20, paddingBottom: 80 }}
         showsVerticalScrollIndicator={false}
       >
         {/* Today stats */}
         <Animated.View entering={FadeInDown.delay(50).duration(400)} style={{ marginBottom: 20 }}>
           <LinearGradient
             colors={['#1E1E3A', '#16163A']}
-            style={{ borderRadius: BORDER_RADIUS.xl, padding: 16 }}
+            style={{ borderRadius: 20, padding: 16 }}
           >
             <View style={{ flexDirection: 'row', justifyContent: 'space-between', marginBottom: 10 }}>
-              <Text style={{ color: COLORS.textSecondary, fontSize: FONT_SIZE.sm }}>Today's Study</Text>
-              <Text style={{ color: COLORS.textPrimary, fontSize: FONT_SIZE.sm, fontWeight: '600' }}>
+              <Text style={{ color: '#A0A0C0', fontSize: 12 }}>Today's Study</Text>
+              <Text style={{ color: '#FFFFFF', fontSize: 12, fontWeight: '600' }}>
                 {totalH}h / {Math.round(goal / 60)}h goal
               </Text>
             </View>
-            <View style={{ height: 8, backgroundColor: COLORS.surfaceLight, borderRadius: 4, overflow: 'hidden' }}>
+            <View style={{ height: 8, backgroundColor: '#252547', borderRadius: 4, overflow: 'hidden' }}>
               <LinearGradient
-                colors={GRADIENTS.primary}
+                colors={['#6366F1','#8B5CF6']}
                 start={{ x: 0, y: 0 }} end={{ x: 1, y: 0 }}
                 style={{ height: '100%', width: `${goalProgress}%`, borderRadius: 4 }}
               />
             </View>
             <View style={{ flexDirection: 'row', justifyContent: 'space-around', marginTop: 12 }}>
               <View style={{ alignItems: 'center' }}>
-                <Text style={{ color: COLORS.primary, fontSize: FONT_SIZE.lg, fontWeight: '700' }}>{totalH}h</Text>
-                <Text style={{ color: COLORS.textMuted, fontSize: FONT_SIZE.xs }}>Studied</Text>
+                <Text style={{ color: '#6366F1', fontSize: 18, fontWeight: '700' }}>{totalH}h</Text>
+                <Text style={{ color: '#606080', fontSize: 11 }}>Studied</Text>
               </View>
               <View style={{ alignItems: 'center' }}>
-                <Text style={{ color: COLORS.accentAmber, fontSize: FONT_SIZE.lg, fontWeight: '700' }}>
+                <Text style={{ color: '#F59E0B', fontSize: 18, fontWeight: '700' }}>
                   {todayLog?.sessions?.length || 0}
                 </Text>
-                <Text style={{ color: COLORS.textMuted, fontSize: FONT_SIZE.xs }}>Sessions</Text>
+                <Text style={{ color: '#606080', fontSize: 11 }}>Sessions</Text>
               </View>
               <View style={{ alignItems: 'center' }}>
-                <Text style={{ color: COLORS.accentEmerald, fontSize: FONT_SIZE.lg, fontWeight: '700' }}>
+                <Text style={{ color: '#10B981', fontSize: 18, fontWeight: '700' }}>
                   {todayLog?.goalAchieved ? '✅' : '⏳'}
                 </Text>
-                <Text style={{ color: COLORS.textMuted, fontSize: FONT_SIZE.xs }}>Goal</Text>
+                <Text style={{ color: '#606080', fontSize: 11 }}>Goal</Text>
               </View>
             </View>
           </LinearGradient>
@@ -313,15 +313,15 @@ export default function StudyTrackerScreen() {
 
         {/* Subject input */}
         <Animated.View entering={FadeInDown.delay(100).duration(400)} style={{ marginBottom: 16 }}>
-          <Text style={{ color: COLORS.textSecondary, fontSize: FONT_SIZE.sm, fontWeight: '500', marginBottom: 8 }}>
+          <Text style={{ color: '#A0A0C0', fontSize: 12, fontWeight: '500', marginBottom: 8 }}>
             Subject / Topic
           </Text>
           <TextInput
             value={subject}
             onChangeText={setSubject}
             placeholder="e.g. Mathematics, Coding, History..."
-            placeholderTextColor={COLORS.textMuted}
-            style={{ backgroundColor: COLORS.surface, borderRadius: BORDER_RADIUS.lg, borderWidth: 1.5, borderColor: COLORS.border, color: COLORS.textPrimary, fontSize: FONT_SIZE.base, padding: 14 }}
+            placeholderTextColor={'#606080'}
+            style={{ backgroundColor: '#1E1E3A', borderRadius: 16, borderWidth: 1.5, borderColor: '#2D2D5A', color: '#FFFFFF', fontSize: 14, padding: 14 }}
           />
         </Animated.View>
 
@@ -332,7 +332,7 @@ export default function StudyTrackerScreen() {
               title="Start Deep Work Session 🎯"
               onPress={handleStartSession}
               loading={loading}
-              gradient={GRADIENTS.primary}
+              gradient={['#6366F1','#8B5CF6']}
               fullWidth
               size="lg"
             />
@@ -355,34 +355,34 @@ export default function StudyTrackerScreen() {
             style={{
               flexDirection: 'row',
               alignItems: 'center',
-              backgroundColor: isLibraryIn ? 'rgba(16,185,129,0.15)' : COLORS.surface,
-              borderRadius: BORDER_RADIUS.xl,
+              backgroundColor: isLibraryIn ? 'rgba(16,185,129,0.15)' : '#1E1E3A',
+              borderRadius: 20,
               padding: 16,
               borderWidth: 1,
-              borderColor: isLibraryIn ? 'rgba(16,185,129,0.3)' : COLORS.border,
+              borderColor: isLibraryIn ? 'rgba(16,185,129,0.3)' : '#2D2D5A',
               gap: 12,
             }}
           >
             <Text style={{ fontSize: 28 }}>🏛️</Text>
             <View style={{ flex: 1 }}>
-              <Text style={{ color: COLORS.textPrimary, fontSize: FONT_SIZE.base, fontWeight: '600' }}>
+              <Text style={{ color: '#FFFFFF', fontSize: 14, fontWeight: '600' }}>
                 {isLibraryIn ? 'Checked In to Library' : 'Library Check-In'}
               </Text>
-              <Text style={{ color: COLORS.textMuted, fontSize: FONT_SIZE.xs, marginTop: 2 }}>
+              <Text style={{ color: '#606080', fontSize: 11, marginTop: 2 }}>
                 {isLibraryIn ? 'Tap to check out' : 'Track your library study time'}
               </Text>
             </View>
             <View
               style={{
                 width: 36, height: 36, borderRadius: 18,
-                backgroundColor: isLibraryIn ? COLORS.accentEmerald : COLORS.surfaceLight,
+                backgroundColor: isLibraryIn ? '#10B981' : '#252547',
                 alignItems: 'center', justifyContent: 'center',
               }}
             >
               <Ionicons
                 name={isLibraryIn ? 'exit-outline' : 'enter-outline'}
                 size={18}
-                color={isLibraryIn ? '#fff' : COLORS.textMuted}
+                color={isLibraryIn ? '#fff' : '#606080'}
               />
             </View>
           </TouchableOpacity>

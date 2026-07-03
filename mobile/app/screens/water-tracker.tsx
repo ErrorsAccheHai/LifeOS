@@ -11,11 +11,13 @@ import Toast from 'react-native-toast-message';
 
 import { useWaterStore } from '@/store/waterStore';
 import ProgressRing from '@/components/ui/ProgressRing';
-import { COLORS, GRADIENTS, FONT_SIZE, BORDER_RADIUS, SPACING, WATER_AMOUNTS } from '@/constants/theme';
+import { WATER_AMOUNTS } from '@/constants/theme';
+import { useTheme } from '@/context/ThemeContext';
 
 export default function WaterTrackerScreen() {
   const router = useRouter();
   const insets = useSafeAreaInsets();
+  const { colors } = useTheme();
   const { todayLog, goal, totalAmount, remaining, percentage, goalAchieved, fetchToday, addWater, removeEntry } = useWaterStore();
 
   const rippleScale = useSharedValue(1);
@@ -68,15 +70,11 @@ export default function WaterTrackerScreen() {
   }));
 
   return (
-    <View style={{ flex: 1, backgroundColor: COLORS.background }}>
+    <View style={{ flex: 1, backgroundColor: colors.background }}>
       {/* Header */}
       <LinearGradient
-        colors={['#0D2040', COLORS.background]}
-        style={{
-          paddingTop: insets.top + 8,
-          paddingHorizontal: SPACING.base,
-          paddingBottom: 24,
-        }}
+        colors={['#0D2040', colors.background]}
+        style={{ paddingTop: insets.top + 8, paddingHorizontal: 16, paddingBottom: 24 }}
       >
         <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', marginBottom: 24 }}>
           <TouchableOpacity
@@ -141,16 +139,12 @@ export default function WaterTrackerScreen() {
       </LinearGradient>
 
       <ScrollView
-        contentContainerStyle={{
-          paddingHorizontal: SPACING.base,
-          paddingTop: 24,
-          paddingBottom: insets.bottom + 24,
-        }}
+        contentContainerStyle={{ paddingHorizontal: 16, paddingTop: 24, paddingBottom: insets.bottom + 24 }}
         showsVerticalScrollIndicator={false}
       >
         {/* Quick add buttons */}
         <Animated.View entering={FadeInDown.delay(100).duration(400)}>
-          <Text style={{ color: COLORS.textSecondary, fontSize: FONT_SIZE.sm, fontWeight: '600', marginBottom: 14, letterSpacing: 0.5, textTransform: 'uppercase' }}>
+          <Text style={{ color: colors.textSecondary, fontSize: 12, fontWeight: '600', marginBottom: 14, letterSpacing: 0.5, textTransform: 'uppercase' }}>
             Quick Add
           </Text>
           <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 12, marginBottom: 24 }}>
@@ -159,22 +153,14 @@ export default function WaterTrackerScreen() {
                 key={amount}
                 onPress={() => handleAddWater(amount)}
                 style={{
-                  flex: 1,
-                  minWidth: '28%',
-                  backgroundColor: COLORS.surface,
-                  borderRadius: BORDER_RADIUS.lg,
-                  padding: 14,
-                  alignItems: 'center',
-                  borderWidth: 1,
-                  borderColor: 'rgba(6,182,212,0.2)',
+                  flex: 1, minWidth: '28%',
+                  backgroundColor: colors.surface,
+                  borderRadius: 14, padding: 14, alignItems: 'center',
+                  borderWidth: 1, borderColor: 'rgba(6,182,212,0.2)',
                 }}
               >
-                <Text style={{ fontSize: 22, marginBottom: 4 }}>
-                  {amount >= 500 ? '🥤' : '🥛'}
-                </Text>
-                <Text style={{ color: '#06B6D4', fontSize: FONT_SIZE.base, fontWeight: '700' }}>
-                  {amount}ml
-                </Text>
+                <Text style={{ fontSize: 22, marginBottom: 4 }}>{amount >= 500 ? '🥤' : '🥛'}</Text>
+                <Text style={{ color: '#06B6D4', fontSize: 14, fontWeight: '700' }}>{amount}ml</Text>
               </TouchableOpacity>
             ))}
           </View>
@@ -183,7 +169,7 @@ export default function WaterTrackerScreen() {
         {/* Today's log */}
         {todayLog?.entries && todayLog.entries.length > 0 && (
           <Animated.View entering={FadeInDown.delay(200).duration(400)}>
-            <Text style={{ color: COLORS.textSecondary, fontSize: FONT_SIZE.sm, fontWeight: '600', marginBottom: 14, letterSpacing: 0.5, textTransform: 'uppercase' }}>
+            <Text style={{ color: colors.textSecondary, fontSize: 12, fontWeight: '600', marginBottom: 14, letterSpacing: 0.5, textTransform: 'uppercase' }}>
               Today's Log
             </Text>
             {[...todayLog.entries].reverse().map((entry) => (
@@ -191,24 +177,19 @@ export default function WaterTrackerScreen() {
                 key={entry._id}
                 onLongPress={() => handleRemove(entry._id, entry.amount)}
                 style={{
-                  flexDirection: 'row',
-                  alignItems: 'center',
-                  backgroundColor: COLORS.surface,
-                  borderRadius: BORDER_RADIUS.lg,
-                  padding: 14,
-                  marginBottom: 10,
+                  flexDirection: 'row', alignItems: 'center',
+                  backgroundColor: colors.surface,
+                  borderRadius: 14, padding: 14, marginBottom: 10,
                 }}
               >
                 <Text style={{ fontSize: 22, marginRight: 14 }}>💧</Text>
                 <View style={{ flex: 1 }}>
-                  <Text style={{ color: COLORS.textPrimary, fontSize: FONT_SIZE.base, fontWeight: '600' }}>
-                    {entry.amount}ml
-                  </Text>
-                  <Text style={{ color: COLORS.textMuted, fontSize: FONT_SIZE.xs, marginTop: 2 }}>
+                  <Text style={{ color: colors.textPrimary, fontSize: 14, fontWeight: '600' }}>{entry.amount}ml</Text>
+                  <Text style={{ color: colors.textMuted, fontSize: 11, marginTop: 2 }}>
                     {entry.source} • {new Date(entry.loggedAt).toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' })}
                   </Text>
                 </View>
-                <Ionicons name="trash-outline" size={16} color={COLORS.textMuted} />
+                <Ionicons name="trash-outline" size={16} color={colors.textMuted} />
               </TouchableOpacity>
             ))}
           </Animated.View>

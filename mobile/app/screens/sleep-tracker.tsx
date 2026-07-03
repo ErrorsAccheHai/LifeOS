@@ -14,7 +14,7 @@ import { api } from '@/services/api';
 import { ENDPOINTS } from '@/constants/api';
 import Button from '@/components/ui/Button';
 import ProgressRing from '@/components/ui/ProgressRing';
-import { COLORS, GRADIENTS, FONT_SIZE, BORDER_RADIUS, SPACING } from '@/constants/theme';
+import { useTheme } from '@/context/ThemeContext';
 import type { SleepLog } from '@/types';
 
 const QUALITY_OPTIONS = [
@@ -97,12 +97,12 @@ export default function SleepTrackerScreen() {
   const sleepScore = todaySleep?.score || 0;
 
   return (
-    <View style={{ flex: 1, backgroundColor: COLORS.background }}>
+    <View style={{ flex: 1, backgroundColor: '#0F0F23' }}>
       <LinearGradient
-        colors={['#030318', '#0A0A2A', COLORS.background]}
+        colors={['#030318', '#0A0A2A', '#0F0F23']}
         style={{
           paddingTop: insets.top + 8,
-          paddingHorizontal: SPACING.base,
+          paddingHorizontal: 16,
           paddingBottom: 32,
         }}
       >
@@ -113,7 +113,7 @@ export default function SleepTrackerScreen() {
           >
             <Ionicons name="chevron-down" size={22} color="#fff" />
           </TouchableOpacity>
-          <Text style={{ color: '#fff', fontSize: FONT_SIZE.lg, fontWeight: '700' }}>Sleep Tracker 😴</Text>
+          <Text style={{ color: '#fff', fontSize: 18, fontWeight: '700' }}>Sleep Tracker 😴</Text>
           <View style={{ width: 40 }} />
         </View>
 
@@ -128,10 +128,10 @@ export default function SleepTrackerScreen() {
           >
             <View style={{ alignItems: 'center' }}>
               <Text style={{ fontSize: 36 }}>🌙</Text>
-              <Text style={{ color: '#fff', fontSize: FONT_SIZE.xl, fontWeight: '800', marginTop: 4 }}>
+              <Text style={{ color: '#fff', fontSize: 20, fontWeight: '800', marginTop: 4 }}>
                 {todaySleep?.score ? `${todaySleep.score}` : '--'}
               </Text>
-              <Text style={{ color: 'rgba(255,255,255,0.6)', fontSize: FONT_SIZE.xs }}>
+              <Text style={{ color: 'rgba(255,255,255,0.6)', fontSize: 11 }}>
                 Sleep Score
               </Text>
             </View>
@@ -140,25 +140,25 @@ export default function SleepTrackerScreen() {
           {/* Stats */}
           <View style={{ flexDirection: 'row', gap: 24, marginTop: 20 }}>
             <View style={{ alignItems: 'center' }}>
-              <Text style={{ color: '#3B82F6', fontSize: FONT_SIZE.lg, fontWeight: '700' }}>
+              <Text style={{ color: '#3B82F6', fontSize: 18, fontWeight: '700' }}>
                 {sleepDuration}
               </Text>
-              <Text style={{ color: 'rgba(255,255,255,0.5)', fontSize: FONT_SIZE.xs }}>Duration</Text>
+              <Text style={{ color: 'rgba(255,255,255,0.5)', fontSize: 11 }}>Duration</Text>
             </View>
             {todaySleep?.bedTime && (
               <View style={{ alignItems: 'center' }}>
-                <Text style={{ color: 'rgba(255,255,255,0.8)', fontSize: FONT_SIZE.lg, fontWeight: '700' }}>
+                <Text style={{ color: 'rgba(255,255,255,0.8)', fontSize: 18, fontWeight: '700' }}>
                   {format(new Date(todaySleep.bedTime), 'h:mm a')}
                 </Text>
-                <Text style={{ color: 'rgba(255,255,255,0.5)', fontSize: FONT_SIZE.xs }}>Bedtime</Text>
+                <Text style={{ color: 'rgba(255,255,255,0.5)', fontSize: 11 }}>Bedtime</Text>
               </View>
             )}
             {todaySleep?.wakeTime && (
               <View style={{ alignItems: 'center' }}>
-                <Text style={{ color: 'rgba(255,255,255,0.8)', fontSize: FONT_SIZE.lg, fontWeight: '700' }}>
+                <Text style={{ color: 'rgba(255,255,255,0.8)', fontSize: 18, fontWeight: '700' }}>
                   {format(new Date(todaySleep.wakeTime), 'h:mm a')}
                 </Text>
-                <Text style={{ color: 'rgba(255,255,255,0.5)', fontSize: FONT_SIZE.xs }}>Wake Time</Text>
+                <Text style={{ color: 'rgba(255,255,255,0.5)', fontSize: 11 }}>Wake Time</Text>
               </View>
             )}
           </View>
@@ -166,7 +166,7 @@ export default function SleepTrackerScreen() {
       </LinearGradient>
 
       <ScrollView
-        contentContainerStyle={{ paddingHorizontal: SPACING.base, paddingTop: 24, paddingBottom: 60 }}
+        contentContainerStyle={{ paddingHorizontal: 16, paddingTop: 24, paddingBottom: 60 }}
         showsVerticalScrollIndicator={false}
       >
         {/* Status card */}
@@ -175,7 +175,7 @@ export default function SleepTrackerScreen() {
             <View
               style={{
                 backgroundColor: 'rgba(59,130,246,0.15)',
-                borderRadius: BORDER_RADIUS.xl,
+                borderRadius: 20,
                 padding: 20,
                 alignItems: 'center',
                 borderWidth: 1,
@@ -184,10 +184,10 @@ export default function SleepTrackerScreen() {
               }}
             >
               <Text style={{ fontSize: 36, marginBottom: 8 }}>💤</Text>
-              <Text style={{ color: COLORS.textPrimary, fontSize: FONT_SIZE.lg, fontWeight: '700', marginBottom: 4 }}>
+              <Text style={{ color: '#FFFFFF', fontSize: 18, fontWeight: '700', marginBottom: 4 }}>
                 Currently Sleeping
               </Text>
-              <Text style={{ color: COLORS.textSecondary, fontSize: FONT_SIZE.sm }}>
+              <Text style={{ color: '#A0A0C0', fontSize: 12 }}>
                 Started at {todaySleep?.bedTime ? format(new Date(todaySleep.bedTime), 'h:mm a') : '--'}
               </Text>
             </View>
@@ -195,7 +195,7 @@ export default function SleepTrackerScreen() {
             <View
               style={{
                 backgroundColor: 'rgba(16,185,129,0.15)',
-                borderRadius: BORDER_RADIUS.xl,
+                borderRadius: 20,
                 padding: 20,
                 alignItems: 'center',
                 borderWidth: 1,
@@ -204,10 +204,10 @@ export default function SleepTrackerScreen() {
               }}
             >
               <Text style={{ fontSize: 36, marginBottom: 8 }}>✅</Text>
-              <Text style={{ color: COLORS.textPrimary, fontSize: FONT_SIZE.lg, fontWeight: '700' }}>
+              <Text style={{ color: '#FFFFFF', fontSize: 18, fontWeight: '700' }}>
                 Sleep logged for today
               </Text>
-              <Text style={{ color: COLORS.accentEmerald, fontSize: FONT_SIZE.base, marginTop: 4, fontWeight: '600' }}>
+              <Text style={{ color: '#10B981', fontSize: 14, marginTop: 4, fontWeight: '600' }}>
                 Score: {todaySleep.score}/100 • {sleepDuration}
               </Text>
             </View>
@@ -217,7 +217,7 @@ export default function SleepTrackerScreen() {
         {/* Quality selection (only when ending sleep) */}
         {isSleeping && (
           <Animated.View entering={FadeInDown.delay(150).duration(400)} style={{ marginBottom: 24 }}>
-            <Text style={{ color: COLORS.textSecondary, fontSize: FONT_SIZE.sm, fontWeight: '600', marginBottom: 14, textTransform: 'uppercase', letterSpacing: 0.5 }}>
+            <Text style={{ color: '#A0A0C0', fontSize: 12, fontWeight: '600', marginBottom: 14, textTransform: 'uppercase', letterSpacing: 0.5 }}>
               How did you sleep?
             </Text>
             <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
@@ -229,16 +229,16 @@ export default function SleepTrackerScreen() {
                     flex: 1,
                     marginHorizontal: 4,
                     padding: 10,
-                    borderRadius: BORDER_RADIUS.lg,
-                    backgroundColor: quality === opt.value ? 'rgba(99,102,241,0.2)' : COLORS.surface,
+                    borderRadius: 16,
+                    backgroundColor: quality === opt.value ? 'rgba(99,102,241,0.2)' : '#1E1E3A',
                     borderWidth: 1.5,
-                    borderColor: quality === opt.value ? COLORS.primary : COLORS.border,
+                    borderColor: quality === opt.value ? '#6366F1' : '#2D2D5A',
                     alignItems: 'center',
                     gap: 4,
                   }}
                 >
                   <Text style={{ fontSize: 22 }}>{opt.emoji}</Text>
-                  <Text style={{ color: quality === opt.value ? COLORS.primary : COLORS.textMuted, fontSize: 10, fontWeight: '500', textAlign: 'center' }}>
+                  <Text style={{ color: quality === opt.value ? '#6366F1' : '#606080', fontSize: 10, fontWeight: '500', textAlign: 'center' }}>
                     {opt.label}
                   </Text>
                 </TouchableOpacity>
@@ -270,13 +270,13 @@ export default function SleepTrackerScreen() {
           ) : (
             <View
               style={{
-                backgroundColor: COLORS.surface,
-                borderRadius: BORDER_RADIUS.xl,
+                backgroundColor: '#1E1E3A',
+                borderRadius: 20,
                 padding: 16,
                 alignItems: 'center',
               }}
             >
-              <Text style={{ color: COLORS.textSecondary, fontSize: FONT_SIZE.base }}>
+              <Text style={{ color: '#A0A0C0', fontSize: 14 }}>
                 Sleep logged ✓ See you tonight!
               </Text>
             </View>
@@ -285,7 +285,7 @@ export default function SleepTrackerScreen() {
 
         {/* Sleep tips */}
         <Animated.View entering={FadeInDown.delay(300).duration(400)} style={{ marginTop: 32 }}>
-          <Text style={{ color: COLORS.textSecondary, fontSize: FONT_SIZE.sm, fontWeight: '600', textTransform: 'uppercase', letterSpacing: 0.5, marginBottom: 14 }}>
+          <Text style={{ color: '#A0A0C0', fontSize: 12, fontWeight: '600', textTransform: 'uppercase', letterSpacing: 0.5, marginBottom: 14 }}>
             Sleep Tips 💡
           </Text>
           {[
@@ -299,15 +299,15 @@ export default function SleepTrackerScreen() {
               style={{
                 flexDirection: 'row',
                 alignItems: 'center',
-                backgroundColor: COLORS.surface,
-                borderRadius: BORDER_RADIUS.lg,
+                backgroundColor: '#1E1E3A',
+                borderRadius: 16,
                 padding: 14,
                 marginBottom: 10,
                 gap: 12,
               }}
             >
               <Text style={{ fontSize: 22 }}>{item.icon}</Text>
-              <Text style={{ color: COLORS.textSecondary, fontSize: FONT_SIZE.sm, flex: 1, lineHeight: 20 }}>
+              <Text style={{ color: '#A0A0C0', fontSize: 12, flex: 1, lineHeight: 20 }}>
                 {item.tip}
               </Text>
             </View>

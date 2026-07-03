@@ -7,6 +7,7 @@ import { SafeAreaProvider } from 'react-native-safe-area-context';
 import Toast from 'react-native-toast-message';
 import * as SplashScreen from 'expo-splash-screen';
 import { useAuthStore } from '@/store/authStore';
+import { ThemeProvider, useTheme } from '@/context/ThemeContext';
 
 SplashScreen.preventAutoHideAsync();
 
@@ -18,6 +19,7 @@ const queryClient = new QueryClient({
 
 function RootLayoutContent() {
   const { loadUser } = useAuthStore();
+  const { isDark, colors } = useTheme();
 
   useEffect(() => {
     loadUser().finally(() => SplashScreen.hideAsync());
@@ -25,21 +27,35 @@ function RootLayoutContent() {
 
   return (
     <>
-      <StatusBar barStyle="light-content" backgroundColor="#0F0F23" />
-      <Stack screenOptions={{ headerShown: false, contentStyle: { backgroundColor: '#0F0F23' } }}>
+      <StatusBar
+        barStyle={isDark ? 'light-content' : 'dark-content'}
+        backgroundColor={colors.background}
+      />
+      <Stack screenOptions={{
+        headerShown: false,
+        contentStyle: { backgroundColor: colors.background },
+        animation: 'slide_from_right',
+      }}>
         <Stack.Screen name="index" />
         <Stack.Screen name="(auth)" />
         <Stack.Screen name="(tabs)" />
         <Stack.Screen name="onboarding" />
-        <Stack.Screen name="screens/activity-detail" options={{ presentation: 'modal' }} />
-        <Stack.Screen name="screens/add-activity" options={{ presentation: 'modal' }} />
-        <Stack.Screen name="screens/water-tracker" options={{ presentation: 'modal' }} />
-        <Stack.Screen name="screens/sleep-tracker" options={{ presentation: 'modal' }} />
-        <Stack.Screen name="screens/workout-log" options={{ presentation: 'modal' }} />
-        <Stack.Screen name="screens/study-tracker" options={{ presentation: 'modal' }} />
-        <Stack.Screen name="screens/weight-log" options={{ presentation: 'modal' }} />
-        <Stack.Screen name="screens/meal-log" options={{ presentation: 'modal' }} />
-        <Stack.Screen name="screens/ai-report" />
+        <Stack.Screen name="screens/activity-detail" options={{ presentation: 'modal', animation: 'slide_from_bottom' }} />
+        <Stack.Screen name="screens/add-activity" options={{ presentation: 'modal', animation: 'slide_from_bottom' }} />
+        <Stack.Screen name="screens/water-tracker" options={{ presentation: 'modal', animation: 'slide_from_bottom' }} />
+        <Stack.Screen name="screens/sleep-tracker" options={{ presentation: 'modal', animation: 'slide_from_bottom' }} />
+        <Stack.Screen name="screens/workout-log" options={{ presentation: 'modal', animation: 'slide_from_bottom' }} />
+        <Stack.Screen name="screens/study-tracker" options={{ presentation: 'modal', animation: 'slide_from_bottom' }} />
+        <Stack.Screen name="screens/weight-log" options={{ presentation: 'modal', animation: 'slide_from_bottom' }} />
+        <Stack.Screen name="screens/meal-log" options={{ presentation: 'modal', animation: 'slide_from_bottom' }} />
+        <Stack.Screen name="screens/ai-report" options={{ animation: 'slide_from_right' }} />
+        <Stack.Screen name="screens/settings/edit-profile" options={{ presentation: 'modal', animation: 'slide_from_bottom' }} />
+        <Stack.Screen name="screens/settings/notifications" options={{ presentation: 'modal', animation: 'slide_from_bottom' }} />
+        <Stack.Screen name="screens/settings/appearance" options={{ presentation: 'modal', animation: 'slide_from_bottom' }} />
+        <Stack.Screen name="screens/settings/schedule-goals" options={{ presentation: 'modal', animation: 'slide_from_bottom' }} />
+        <Stack.Screen name="screens/settings/about" options={{ presentation: 'modal', animation: 'slide_from_bottom' }} />
+        <Stack.Screen name="screens/settings/change-password" options={{ presentation: 'modal', animation: 'slide_from_bottom' }} />
+        <Stack.Screen name="screens/add-habit" options={{ presentation: 'modal', animation: 'slide_from_bottom' }} />
       </Stack>
       <Toast />
     </>
@@ -51,7 +67,9 @@ export default function RootLayout() {
     <GestureHandlerRootView style={{ flex: 1 }}>
       <SafeAreaProvider>
         <QueryClientProvider client={queryClient}>
-          <RootLayoutContent />
+          <ThemeProvider>
+            <RootLayoutContent />
+          </ThemeProvider>
         </QueryClientProvider>
       </SafeAreaProvider>
     </GestureHandlerRootView>

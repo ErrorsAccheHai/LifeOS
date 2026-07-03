@@ -16,7 +16,7 @@ import { useAuthStore } from '@/store/authStore';
 import Button from '@/components/ui/Button';
 import Input from '@/components/ui/Input';
 import ProgressBar from '@/components/ui/ProgressBar';
-import { COLORS, GRADIENTS, FONT_SIZE, SPACING, BORDER_RADIUS } from '@/constants/theme';
+import { useTheme } from '@/context/ThemeContext';
 
 const { width } = Dimensions.get('window');
 
@@ -54,10 +54,10 @@ const SelectButton = ({ label, selected, onPress, emoji }: any) => (
     onPress={onPress}
     style={{
       flex: 1,
-      borderRadius: BORDER_RADIUS.lg,
+      borderRadius: 16,
       borderWidth: 1.5,
-      borderColor: selected ? COLORS.primary : COLORS.border,
-      backgroundColor: selected ? 'rgba(99, 102, 241, 0.15)' : COLORS.surface,
+      borderColor: selected ? '#6366F1' : '#2D2D5A',
+      backgroundColor: selected ? 'rgba(99, 102, 241, 0.15)' : '#1E1E3A',
       paddingVertical: 14,
       paddingHorizontal: 12,
       alignItems: 'center',
@@ -66,8 +66,8 @@ const SelectButton = ({ label, selected, onPress, emoji }: any) => (
   >
     {emoji && <Text style={{ fontSize: 22 }}>{emoji}</Text>}
     <Text style={{
-      color: selected ? COLORS.primary : COLORS.textSecondary,
-      fontSize: FONT_SIZE.sm,
+      color: selected ? '#6366F1' : '#A0A0C0',
+      fontSize: 12,
       fontWeight: selected ? '600' : '400',
       textAlign: 'center',
     }}>
@@ -167,7 +167,7 @@ export default function OnboardingScreen() {
               placeholder="What should we call you?"
               value={data.name}
               onChangeText={(v) => update('name', v)}
-              leftIcon={<Ionicons name="person-outline" size={20} color={COLORS.textMuted} />}
+              leftIcon={<Ionicons name="person-outline" size={20} color={'#606080'} />}
             />
             <Input
               label="Age"
@@ -175,10 +175,10 @@ export default function OnboardingScreen() {
               keyboardType="numeric"
               value={data.age}
               onChangeText={(v) => update('age', v)}
-              leftIcon={<Ionicons name="calendar-outline" size={20} color={COLORS.textMuted} />}
+              leftIcon={<Ionicons name="calendar-outline" size={20} color={'#606080'} />}
             />
 
-            <Text style={{ color: COLORS.textSecondary, fontSize: FONT_SIZE.sm, fontWeight: '500', marginBottom: 12 }}>
+            <Text style={{ color: '#A0A0C0', fontSize: 12, fontWeight: '500', marginBottom: 12 }}>
               Gender
             </Text>
             <View style={{ flexDirection: 'row', gap: 10, marginBottom: 20 }}>
@@ -197,7 +197,7 @@ export default function OnboardingScreen() {
               ))}
             </View>
 
-            <Text style={{ color: COLORS.textSecondary, fontSize: FONT_SIZE.sm, fontWeight: '500', marginBottom: 12 }}>
+            <Text style={{ color: '#A0A0C0', fontSize: 12, fontWeight: '500', marginBottom: 12 }}>
               Occupation
             </Text>
             <View style={{ flexDirection: 'row', gap: 10 }}>
@@ -227,7 +227,7 @@ export default function OnboardingScreen() {
               keyboardType="numeric"
               value={data.height}
               onChangeText={(v) => update('height', v)}
-              leftIcon={<Ionicons name="resize-outline" size={20} color={COLORS.textMuted} />}
+              leftIcon={<Ionicons name="resize-outline" size={20} color={'#606080'} />}
             />
             <Input
               label="Current Weight (kg)"
@@ -235,7 +235,7 @@ export default function OnboardingScreen() {
               keyboardType="decimal-pad"
               value={data.currentWeight}
               onChangeText={(v) => update('currentWeight', v)}
-              leftIcon={<Ionicons name="scale-outline" size={20} color={COLORS.textMuted} />}
+              leftIcon={<Ionicons name="scale-outline" size={20} color={'#606080'} />}
             />
             <Input
               label="Goal Weight (kg)"
@@ -243,7 +243,7 @@ export default function OnboardingScreen() {
               keyboardType="decimal-pad"
               value={data.goalWeight}
               onChangeText={(v) => update('goalWeight', v)}
-              leftIcon={<Ionicons name="trophy-outline" size={20} color={COLORS.textMuted} />}
+              leftIcon={<Ionicons name="trophy-outline" size={20} color={'#606080'} />}
               hint="Optional — helps track your progress"
             />
           </Animated.View>
@@ -314,10 +314,10 @@ export default function OnboardingScreen() {
         return (
           <Animated.View entering={FadeInDown.duration(400)} key="ready" style={{ alignItems: 'center', paddingTop: 20 }}>
             <Text style={{ fontSize: 80, marginBottom: 24 }}>🎉</Text>
-            <Text style={{ color: COLORS.textPrimary, fontSize: FONT_SIZE['2xl'], fontWeight: '700', textAlign: 'center', marginBottom: 12 }}>
+            <Text style={{ color: '#FFFFFF', fontSize: FONT_SIZE['2xl'], fontWeight: '700', textAlign: 'center', marginBottom: 12 }}>
               Your LifeOS is Ready!
             </Text>
-            <Text style={{ color: COLORS.textSecondary, fontSize: FONT_SIZE.base, textAlign: 'center', lineHeight: 26 }}>
+            <Text style={{ color: '#A0A0C0', fontSize: 14, textAlign: 'center', lineHeight: 26 }}>
               We've created your personalized daily routine based on your schedule. Let's start building great habits!
             </Text>
 
@@ -331,7 +331,7 @@ export default function OnboardingScreen() {
               ].map((item) => (
                 <View key={item.label} style={{ flexDirection: 'row', alignItems: 'center', gap: 12 }}>
                   <Text style={{ fontSize: 24 }}>{item.emoji}</Text>
-                  <Text style={{ color: COLORS.textSecondary, fontSize: FONT_SIZE.base }}>{item.label}</Text>
+                  <Text style={{ color: '#A0A0C0', fontSize: 14 }}>{item.label}</Text>
                 </View>
               ))}
             </View>
@@ -347,9 +347,9 @@ export default function OnboardingScreen() {
   const progress = ((step + 1) / STEPS.length) * 100;
 
   return (
-    <LinearGradient colors={[COLORS.background, COLORS.backgroundSecondary]} style={{ flex: 1 }}>
+    <LinearGradient colors={['#0F0F23', '#1A1A2E']} style={{ flex: 1 }}>
       <KeyboardAvoidingView behavior={Platform.OS === 'ios' ? 'padding' : 'height'} style={{ flex: 1 }}>
-        <View style={{ flex: 1, paddingTop: insets.top + 16, paddingHorizontal: SPACING.base }}>
+        <View style={{ flex: 1, paddingTop: insets.top + 16, paddingHorizontal: 16 }}>
           {/* Header */}
           <View style={{ flexDirection: 'row', alignItems: 'center', marginBottom: 8 }}>
             {step > 0 && (
@@ -357,20 +357,20 @@ export default function OnboardingScreen() {
                 onPress={() => setStep(step - 1)}
                 style={{ marginRight: 12 }}
               >
-                <Ionicons name="chevron-back" size={24} color={COLORS.textPrimary} />
+                <Ionicons name="chevron-back" size={24} color={'#FFFFFF'} />
               </TouchableOpacity>
             )}
-            <Text style={{ color: COLORS.textMuted, fontSize: FONT_SIZE.sm }}>
+            <Text style={{ color: '#606080', fontSize: 12 }}>
               Step {step + 1} of {STEPS.length}
             </Text>
-            <Text style={{ color: COLORS.primary, fontSize: FONT_SIZE.sm, marginLeft: 'auto', fontWeight: '600' }}>
+            <Text style={{ color: '#6366F1', fontSize: 12, marginLeft: 'auto', fontWeight: '600' }}>
               {Math.round(progress)}%
             </Text>
           </View>
 
           <ProgressBar
             progress={progress}
-            gradient={GRADIENTS.primary}
+            gradient={['#6366F1','#8B5CF6']}
             height={4}
             style={{ marginBottom: 32 }}
           />
@@ -378,10 +378,10 @@ export default function OnboardingScreen() {
           {/* Step header */}
           <View style={{ marginBottom: 32 }}>
             <Text style={{ fontSize: 40, marginBottom: 12 }}>{currentStep.emoji}</Text>
-            <Text style={{ color: COLORS.textPrimary, fontSize: FONT_SIZE['2xl'], fontWeight: '700', marginBottom: 6 }}>
+            <Text style={{ color: '#FFFFFF', fontSize: FONT_SIZE['2xl'], fontWeight: '700', marginBottom: 6 }}>
               {currentStep.title}
             </Text>
-            <Text style={{ color: COLORS.textSecondary, fontSize: FONT_SIZE.base }}>
+            <Text style={{ color: '#A0A0C0', fontSize: 14 }}>
               {currentStep.subtitle}
             </Text>
           </View>
@@ -401,7 +401,7 @@ export default function OnboardingScreen() {
             <Button
               title={step === STEPS.length - 1 ? "Let's Go! 🚀" : 'Continue'}
               onPress={handleNext}
-              gradient={GRADIENTS.primary}
+              gradient={['#6366F1','#8B5CF6']}
               fullWidth
               size="lg"
               loading={loading}

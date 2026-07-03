@@ -69,21 +69,48 @@ export const COLORS = {
   glassBorder: 'rgba(255, 255, 255, 0.1)',
 } as const;
 
+export const LIGHT_COLORS = {
+  primary: '#6366F1',
+  primaryLight: '#818CF8',
+  primaryDark: '#4F46E5',
+  background: '#F8F9FF',
+  backgroundSecondary: '#EEEEF8',
+  surface: '#FFFFFF',
+  surfaceLight: '#F0F0FA',
+  surfaceLighter: '#E4E4F4',
+  textPrimary: '#0F0F23',
+  textSecondary: '#4A4A6A',
+  textMuted: '#8080A0',
+  textInverse: '#FFFFFF',
+  border: '#DDDDEF',
+  borderLight: '#EEEEF8',
+  glass: 'rgba(99, 102, 241, 0.05)',
+  glassBorder: 'rgba(99, 102, 241, 0.15)',
+} as const;
+
+export const AMOLED_COLORS = {
+  background: '#000000',
+  backgroundSecondary: '#0A0A15',
+  surface: '#111122',
+  surfaceLight: '#1A1A2E',
+  surfaceLighter: '#222238',
+} as const;
+
 export const GRADIENTS = {
-  primary: ['#6366F1', '#8B5CF6'],
-  pink: ['#EC4899', '#F43F5E'],
-  cyan: ['#06B6D4', '#3B82F6'],
-  emerald: ['#10B981', '#06B6D4'],
-  amber: ['#F59E0B', '#F97316'],
-  dark: ['#1A1A2E', '#0F0F23'],
-  card: ['#1E1E3A', '#16163A'],
-  sleep: ['#3B82F6', '#6366F1'],
-  water: ['#06B6D4', '#3B82F6'],
-  workout: ['#EF4444', '#F97316'],
-  study: ['#6366F1', '#8B5CF6'],
-  health: ['#10B981', '#06B6D4'],
-  gold: ['#F59E0B', '#FFD700'],
-  life: ['#6366F1', '#EC4899'],
+  primary: ['#6366F1', '#8B5CF6'] as const,
+  pink: ['#EC4899', '#F43F5E'] as const,
+  cyan: ['#06B6D4', '#3B82F6'] as const,
+  emerald: ['#10B981', '#06B6D4'] as const,
+  amber: ['#F59E0B', '#F97316'] as const,
+  dark: ['#1A1A2E', '#0F0F23'] as const,
+  card: ['#1E1E3A', '#16163A'] as const,
+  sleep: ['#3B82F6', '#6366F1'] as const,
+  water: ['#06B6D4', '#3B82F6'] as const,
+  workout: ['#EF4444', '#F97316'] as const,
+  study: ['#6366F1', '#8B5CF6'] as const,
+  health: ['#10B981', '#06B6D4'] as const,
+  gold: ['#F59E0B', '#FFD700'] as const,
+  life: ['#6366F1', '#EC4899'] as const,
 } as const;
 
 export const SPACING = {
@@ -154,15 +181,15 @@ export const SHADOWS = {
 } as const;
 
 export const CATEGORY_CONFIG = {
-  health: { color: '#10B981', icon: '❤️', gradient: ['#10B981', '#06B6D4'] },
-  fitness: { color: '#EF4444', icon: '💪', gradient: ['#EF4444', '#F97316'] },
-  study: { color: '#6366F1', icon: '📚', gradient: ['#6366F1', '#8B5CF6'] },
-  work: { color: '#3B82F6', icon: '💼', gradient: ['#3B82F6', '#06B6D4'] },
-  personal: { color: '#8B5CF6', icon: '⭐', gradient: ['#8B5CF6', '#EC4899'] },
-  religion: { color: '#F59E0B', icon: '🙏', gradient: ['#F59E0B', '#F97316'] },
-  finance: { color: '#10B981', icon: '💰', gradient: ['#10B981', '#3B82F6'] },
-  entertainment: { color: '#EC4899', icon: '🎮', gradient: ['#EC4899', '#8B5CF6'] },
-  custom: { color: '#06B6D4', icon: '✨', gradient: ['#06B6D4', '#6366F1'] },
+  health: { color: '#10B981', icon: '❤️', gradient: ['#10B981', '#06B6D4'] as const },
+  fitness: { color: '#EF4444', icon: '💪', gradient: ['#EF4444', '#F97316'] as const },
+  study: { color: '#6366F1', icon: '📚', gradient: ['#6366F1', '#8B5CF6'] as const },
+  work: { color: '#3B82F6', icon: '💼', gradient: ['#3B82F6', '#06B6D4'] as const },
+  personal: { color: '#8B5CF6', icon: '⭐', gradient: ['#8B5CF6', '#EC4899'] as const },
+  religion: { color: '#F59E0B', icon: '🙏', gradient: ['#F59E0B', '#F97316'] as const },
+  finance: { color: '#10B981', icon: '💰', gradient: ['#10B981', '#3B82F6'] as const },
+  entertainment: { color: '#EC4899', icon: '🎮', gradient: ['#EC4899', '#8B5CF6'] as const },
+  custom: { color: '#06B6D4', icon: '✨', gradient: ['#06B6D4', '#6366F1'] as const },
 } as const;
 
 export const MOOD_CONFIG = [
@@ -180,4 +207,26 @@ export const BADGE_RARITY_COLORS = {
   rare: '#3B82F6',
   epic: '#8B5CF6',
   legendary: '#F59E0B',
+} as const;
+
+// Activity state config
+export const ACTIVITY_STATE_CONFIG = {
+  upcoming: { color: '#A0A0C0', icon: '⏰', label: 'Upcoming' },
+  in_progress: { color: '#F59E0B', icon: '▶️', label: 'In Progress' },
+  completed: { color: '#10B981', icon: '✅', label: 'Completed' },
+  late: { color: '#F97316', icon: '⚠️', label: 'Late' },
+  missed: { color: '#EF4444', icon: '❌', label: 'Missed' },
+  skipped: { color: '#8B5CF6', icon: '⏭️', label: 'Skipped' },
+  cancelled: { color: '#6B7280', icon: '🚫', label: 'Cancelled' },
+  rescheduled: { color: '#06B6D4', icon: '🔄', label: 'Rescheduled' },
+  pending: { color: '#A0A0C0', icon: '⏳', label: 'Pending' },
+} as const;
+
+// XP multipliers per completion state
+export const XP_MULTIPLIERS = {
+  completed: 1.0,    // 100%
+  late: 0.7,         // 70%
+  skipped: -0.25,    // -25%
+  missed: 0,         // 0%
+  cancelled: 0,      // 0%
 } as const;

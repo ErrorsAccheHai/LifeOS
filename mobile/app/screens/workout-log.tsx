@@ -13,7 +13,7 @@ import Animated, { FadeInDown } from 'react-native-reanimated';
 import { api } from '@/services/api';
 import { ENDPOINTS } from '@/constants/api';
 import Button from '@/components/ui/Button';
-import { COLORS, GRADIENTS, FONT_SIZE, BORDER_RADIUS, SPACING } from '@/constants/theme';
+import { useTheme } from '@/context/ThemeContext';
 import type { Exercise } from '@/types';
 
 const WORKOUT_TYPES = [
@@ -116,14 +116,14 @@ export default function WorkoutLogScreen() {
   return (
     <KeyboardAvoidingView
       behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
-      style={{ flex: 1, backgroundColor: COLORS.background }}
+      style={{ flex: 1, backgroundColor: '#0F0F23' }}
     >
       {/* Header */}
       <LinearGradient
-        colors={['#2D0A0A', COLORS.background]}
+        colors={['#2D0A0A', '#0F0F23']}
         style={{
           paddingTop: insets.top + 8,
-          paddingHorizontal: SPACING.base,
+          paddingHorizontal: 16,
           paddingBottom: 20,
         }}
       >
@@ -134,19 +134,19 @@ export default function WorkoutLogScreen() {
           >
             <Ionicons name="chevron-down" size={22} color="#fff" />
           </TouchableOpacity>
-          <Text style={{ color: '#fff', fontSize: FONT_SIZE.lg, fontWeight: '700' }}>Log Workout 💪</Text>
+          <Text style={{ color: '#fff', fontSize: 18, fontWeight: '700' }}>Log Workout 💪</Text>
           <View style={{ width: 40 }} />
         </View>
       </LinearGradient>
 
       <ScrollView
-        contentContainerStyle={{ paddingHorizontal: SPACING.base, paddingTop: 16, paddingBottom: 100 }}
+        contentContainerStyle={{ paddingHorizontal: 16, paddingTop: 16, paddingBottom: 100 }}
         showsVerticalScrollIndicator={false}
         keyboardShouldPersistTaps="handled"
       >
         {/* Quick workouts */}
         <Animated.View entering={FadeInDown.delay(50).duration(400)}>
-          <Text style={{ color: COLORS.textSecondary, fontSize: FONT_SIZE.xs, fontWeight: '600', textTransform: 'uppercase', letterSpacing: 0.5, marginBottom: 12 }}>
+          <Text style={{ color: '#A0A0C0', fontSize: 11, fontWeight: '600', textTransform: 'uppercase', letterSpacing: 0.5, marginBottom: 12 }}>
             Quick Start
           </Text>
           <ScrollView horizontal showsHorizontalScrollIndicator={false} style={{ marginBottom: 20, marginHorizontal: -4 }}>
@@ -155,22 +155,22 @@ export default function WorkoutLogScreen() {
                 key={qw.title}
                 onPress={() => applyQuickWorkout(qw)}
                 style={{
-                  backgroundColor: COLORS.surface,
-                  borderRadius: BORDER_RADIUS.lg,
+                  backgroundColor: '#1E1E3A',
+                  borderRadius: 16,
                   padding: 14,
                   marginHorizontal: 6,
                   width: 140,
                   borderWidth: 1,
-                  borderColor: title === qw.title ? COLORS.error : 'rgba(255,255,255,0.05)',
+                  borderColor: title === qw.title ? '#EF4444' : 'rgba(255,255,255,0.05)',
                 }}
               >
                 <Text style={{ fontSize: 24, marginBottom: 6 }}>
                   {WORKOUT_TYPES.find((t) => t.value === qw.type)?.icon || '🏋️'}
                 </Text>
-                <Text style={{ color: COLORS.textPrimary, fontSize: FONT_SIZE.sm, fontWeight: '600', marginBottom: 4 }}>
+                <Text style={{ color: '#FFFFFF', fontSize: 12, fontWeight: '600', marginBottom: 4 }}>
                   {qw.title}
                 </Text>
-                <Text style={{ color: COLORS.textMuted, fontSize: FONT_SIZE.xs }}>
+                <Text style={{ color: '#606080', fontSize: 11 }}>
                   ~{qw.duration} min
                 </Text>
               </TouchableOpacity>
@@ -180,7 +180,7 @@ export default function WorkoutLogScreen() {
 
         {/* Type selector */}
         <Animated.View entering={FadeInDown.delay(100).duration(400)}>
-          <Text style={{ color: COLORS.textSecondary, fontSize: FONT_SIZE.xs, fontWeight: '600', textTransform: 'uppercase', letterSpacing: 0.5, marginBottom: 12 }}>
+          <Text style={{ color: '#A0A0C0', fontSize: 11, fontWeight: '600', textTransform: 'uppercase', letterSpacing: 0.5, marginBottom: 12 }}>
             Workout Type
           </Text>
           <ScrollView horizontal showsHorizontalScrollIndicator={false} style={{ marginBottom: 20 }}>
@@ -195,14 +195,14 @@ export default function WorkoutLogScreen() {
                   gap: 6,
                   paddingHorizontal: 14,
                   paddingVertical: 8,
-                  borderRadius: BORDER_RADIUS.full,
-                  backgroundColor: workoutType === type.value ? COLORS.error : COLORS.surface,
+                  borderRadius: 999,
+                  backgroundColor: workoutType === type.value ? '#EF4444' : '#1E1E3A',
                   borderWidth: 1,
-                  borderColor: workoutType === type.value ? COLORS.error : COLORS.border,
+                  borderColor: workoutType === type.value ? '#EF4444' : '#2D2D5A',
                 }}
               >
                 <Text style={{ fontSize: 16 }}>{type.icon}</Text>
-                <Text style={{ color: workoutType === type.value ? '#fff' : COLORS.textSecondary, fontSize: FONT_SIZE.sm, fontWeight: '500' }}>
+                <Text style={{ color: workoutType === type.value ? '#fff' : '#A0A0C0', fontSize: 12, fontWeight: '500' }}>
                   {type.label}
                 </Text>
               </TouchableOpacity>
@@ -212,21 +212,21 @@ export default function WorkoutLogScreen() {
 
         {/* Title */}
         <Animated.View entering={FadeInDown.delay(150).duration(400)} style={{ marginBottom: 16 }}>
-          <Text style={{ color: COLORS.textSecondary, fontSize: FONT_SIZE.sm, fontWeight: '500', marginBottom: 8 }}>
+          <Text style={{ color: '#A0A0C0', fontSize: 12, fontWeight: '500', marginBottom: 8 }}>
             Workout Title *
           </Text>
           <TextInput
             value={title}
             onChangeText={setTitle}
             placeholder="e.g. Morning Chest Day"
-            placeholderTextColor={COLORS.textMuted}
+            placeholderTextColor={'#606080'}
             style={{
-              backgroundColor: COLORS.surface,
-              borderRadius: BORDER_RADIUS.lg,
+              backgroundColor: '#1E1E3A',
+              borderRadius: 16,
               borderWidth: 1.5,
-              borderColor: COLORS.border,
-              color: COLORS.textPrimary,
-              fontSize: FONT_SIZE.base,
+              borderColor: '#2D2D5A',
+              color: '#FFFFFF',
+              fontSize: 14,
               padding: 14,
             }}
           />
@@ -235,43 +235,43 @@ export default function WorkoutLogScreen() {
         {/* Duration & Calories */}
         <Animated.View entering={FadeInDown.delay(200).duration(400)} style={{ flexDirection: 'row', gap: 12, marginBottom: 16 }}>
           <View style={{ flex: 1 }}>
-            <Text style={{ color: COLORS.textSecondary, fontSize: FONT_SIZE.sm, fontWeight: '500', marginBottom: 8 }}>
+            <Text style={{ color: '#A0A0C0', fontSize: 12, fontWeight: '500', marginBottom: 8 }}>
               Duration (min) *
             </Text>
             <TextInput
               value={duration}
               onChangeText={setDuration}
               placeholder="45"
-              placeholderTextColor={COLORS.textMuted}
+              placeholderTextColor={'#606080'}
               keyboardType="numeric"
               style={{
-                backgroundColor: COLORS.surface,
-                borderRadius: BORDER_RADIUS.lg,
+                backgroundColor: '#1E1E3A',
+                borderRadius: 16,
                 borderWidth: 1.5,
-                borderColor: COLORS.border,
-                color: COLORS.textPrimary,
-                fontSize: FONT_SIZE.base,
+                borderColor: '#2D2D5A',
+                color: '#FFFFFF',
+                fontSize: 14,
                 padding: 14,
               }}
             />
           </View>
           <View style={{ flex: 1 }}>
-            <Text style={{ color: COLORS.textSecondary, fontSize: FONT_SIZE.sm, fontWeight: '500', marginBottom: 8 }}>
+            <Text style={{ color: '#A0A0C0', fontSize: 12, fontWeight: '500', marginBottom: 8 }}>
               Calories Burned
             </Text>
             <TextInput
               value={calories}
               onChangeText={setCalories}
               placeholder="Optional"
-              placeholderTextColor={COLORS.textMuted}
+              placeholderTextColor={'#606080'}
               keyboardType="numeric"
               style={{
-                backgroundColor: COLORS.surface,
-                borderRadius: BORDER_RADIUS.lg,
+                backgroundColor: '#1E1E3A',
+                borderRadius: 16,
                 borderWidth: 1.5,
-                borderColor: COLORS.border,
-                color: COLORS.textPrimary,
-                fontSize: FONT_SIZE.base,
+                borderColor: '#2D2D5A',
+                color: '#FFFFFF',
+                fontSize: 14,
                 padding: 14,
               }}
             />
@@ -280,7 +280,7 @@ export default function WorkoutLogScreen() {
 
         {/* Intensity */}
         <Animated.View entering={FadeInDown.delay(250).duration(400)} style={{ marginBottom: 20 }}>
-          <Text style={{ color: COLORS.textSecondary, fontSize: FONT_SIZE.sm, fontWeight: '500', marginBottom: 12 }}>
+          <Text style={{ color: '#A0A0C0', fontSize: 12, fontWeight: '500', marginBottom: 12 }}>
             Intensity
           </Text>
           <View style={{ flexDirection: 'row', gap: 10 }}>
@@ -291,14 +291,14 @@ export default function WorkoutLogScreen() {
                 style={{
                   flex: 1,
                   paddingVertical: 10,
-                  borderRadius: BORDER_RADIUS.lg,
-                  backgroundColor: intensity === opt.value ? `${opt.color}25` : COLORS.surface,
+                  borderRadius: 16,
+                  backgroundColor: intensity === opt.value ? `${opt.color}25` : '#1E1E3A',
                   borderWidth: 1.5,
-                  borderColor: intensity === opt.value ? opt.color : COLORS.border,
+                  borderColor: intensity === opt.value ? opt.color : '#2D2D5A',
                   alignItems: 'center',
                 }}
               >
-                <Text style={{ color: intensity === opt.value ? opt.color : COLORS.textMuted, fontSize: FONT_SIZE.sm, fontWeight: '600' }}>
+                <Text style={{ color: intensity === opt.value ? opt.color : '#606080', fontSize: 12, fontWeight: '600' }}>
                   {opt.label}
                 </Text>
               </TouchableOpacity>
@@ -308,7 +308,7 @@ export default function WorkoutLogScreen() {
 
         {/* Rating */}
         <Animated.View entering={FadeInDown.delay(300).duration(400)} style={{ marginBottom: 20 }}>
-          <Text style={{ color: COLORS.textSecondary, fontSize: FONT_SIZE.sm, fontWeight: '500', marginBottom: 12 }}>
+          <Text style={{ color: '#A0A0C0', fontSize: 12, fontWeight: '500', marginBottom: 12 }}>
             Rate This Workout
           </Text>
           <View style={{ flexDirection: 'row', gap: 12 }}>
@@ -322,23 +322,23 @@ export default function WorkoutLogScreen() {
 
         {/* Notes */}
         <Animated.View entering={FadeInDown.delay(350).duration(400)} style={{ marginBottom: 24 }}>
-          <Text style={{ color: COLORS.textSecondary, fontSize: FONT_SIZE.sm, fontWeight: '500', marginBottom: 8 }}>
+          <Text style={{ color: '#A0A0C0', fontSize: 12, fontWeight: '500', marginBottom: 8 }}>
             Notes
           </Text>
           <TextInput
             value={notes}
             onChangeText={setNotes}
             placeholder="How did it go? Any PRs?"
-            placeholderTextColor={COLORS.textMuted}
+            placeholderTextColor={'#606080'}
             multiline
             numberOfLines={3}
             style={{
-              backgroundColor: COLORS.surface,
-              borderRadius: BORDER_RADIUS.lg,
+              backgroundColor: '#1E1E3A',
+              borderRadius: 16,
               borderWidth: 1.5,
-              borderColor: COLORS.border,
-              color: COLORS.textPrimary,
-              fontSize: FONT_SIZE.base,
+              borderColor: '#2D2D5A',
+              color: '#FFFFFF',
+              fontSize: 14,
               padding: 14,
               textAlignVertical: 'top',
               minHeight: 80,

@@ -11,7 +11,7 @@ import Animated, { FadeInDown } from 'react-native-reanimated';
 import { api } from '@/services/api';
 import { ENDPOINTS } from '@/constants/api';
 import Button from '@/components/ui/Button';
-import { COLORS, GRADIENTS, FONT_SIZE, BORDER_RADIUS, SPACING } from '@/constants/theme';
+import { useTheme } from '@/context/ThemeContext';
 import type { Report } from '@/types';
 
 type ReportType = 'daily' | 'weekly' | 'monthly';
@@ -67,27 +67,27 @@ export default function AIReportScreen() {
   };
 
   return (
-    <View style={{ flex: 1, backgroundColor: COLORS.background }}>
+    <View style={{ flex: 1, backgroundColor: '#0F0F23' }}>
       {/* Header */}
       <LinearGradient
-        colors={[COLORS.backgroundSecondary, COLORS.background]}
-        style={{ paddingTop: insets.top + 8, paddingHorizontal: SPACING.base, paddingBottom: 20 }}
+        colors={['#1A1A2E', '#0F0F23']}
+        style={{ paddingTop: insets.top + 8, paddingHorizontal: 16, paddingBottom: 20 }}
       >
         <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', marginBottom: 16 }}>
           <TouchableOpacity
             onPress={() => router.back()}
-            style={{ width: 40, height: 40, borderRadius: 20, backgroundColor: COLORS.surface, alignItems: 'center', justifyContent: 'center' }}
+            style={{ width: 40, height: 40, borderRadius: 20, backgroundColor: '#1E1E3A', alignItems: 'center', justifyContent: 'center' }}
           >
-            <Ionicons name="chevron-back" size={22} color={COLORS.textPrimary} />
+            <Ionicons name="chevron-back" size={22} color={'#FFFFFF'} />
           </TouchableOpacity>
-          <Text style={{ color: COLORS.textPrimary, fontSize: FONT_SIZE.lg, fontWeight: '700' }}>
+          <Text style={{ color: '#FFFFFF', fontSize: 18, fontWeight: '700' }}>
             AI Coach 🤖
           </Text>
           <View style={{ width: 40 }} />
         </View>
 
         {/* Type selector */}
-        <View style={{ flexDirection: 'row', backgroundColor: COLORS.surface, borderRadius: BORDER_RADIUS.lg, padding: 4 }}>
+        <View style={{ flexDirection: 'row', backgroundColor: '#1E1E3A', borderRadius: 16, padding: 4 }}>
           {REPORT_TYPES.map((type) => (
             <TouchableOpacity
               key={type.value}
@@ -95,8 +95,8 @@ export default function AIReportScreen() {
               style={{
                 flex: 1,
                 paddingVertical: 8,
-                borderRadius: BORDER_RADIUS.md,
-                backgroundColor: activeType === type.value ? COLORS.primary : 'transparent',
+                borderRadius: 12,
+                backgroundColor: activeType === type.value ? '#6366F1' : 'transparent',
                 alignItems: 'center',
                 flexDirection: 'row',
                 justifyContent: 'center',
@@ -104,7 +104,7 @@ export default function AIReportScreen() {
               }}
             >
               <Text style={{ fontSize: 14 }}>{type.emoji}</Text>
-              <Text style={{ color: activeType === type.value ? '#fff' : COLORS.textMuted, fontSize: FONT_SIZE.sm, fontWeight: '600' }}>
+              <Text style={{ color: activeType === type.value ? '#fff' : '#606080', fontSize: 12, fontWeight: '600' }}>
                 {type.label}
               </Text>
             </TouchableOpacity>
@@ -113,13 +113,13 @@ export default function AIReportScreen() {
       </LinearGradient>
 
       <ScrollView
-        contentContainerStyle={{ paddingHorizontal: SPACING.base, paddingTop: 16, paddingBottom: 60 }}
+        contentContainerStyle={{ paddingHorizontal: 16, paddingTop: 16, paddingBottom: 60 }}
         showsVerticalScrollIndicator={false}
       >
         {/* AI Suggestions */}
         {suggestions.length > 0 && (
           <Animated.View entering={FadeInDown.delay(50).duration(400)} style={{ marginBottom: 24 }}>
-            <Text style={{ color: COLORS.textPrimary, fontSize: FONT_SIZE.base, fontWeight: '700', marginBottom: 14 }}>
+            <Text style={{ color: '#FFFFFF', fontSize: 14, fontWeight: '700', marginBottom: 14 }}>
               Smart Suggestions ✨
             </Text>
             {suggestions.map((suggestion, index) => (
@@ -128,12 +128,12 @@ export default function AIReportScreen() {
                 style={{
                   flexDirection: 'row',
                   alignItems: 'flex-start',
-                  backgroundColor: COLORS.surface,
-                  borderRadius: BORDER_RADIUS.lg,
+                  backgroundColor: '#1E1E3A',
+                  borderRadius: 16,
                   padding: 14,
                   marginBottom: 10,
                   borderLeftWidth: 3,
-                  borderLeftColor: suggestion.priority === 'high' ? COLORS.error : COLORS.primary,
+                  borderLeftColor: suggestion.priority === 'high' ? '#EF4444' : '#6366F1',
                   gap: 12,
                 }}
               >
@@ -144,7 +144,7 @@ export default function AIReportScreen() {
                    suggestion.type === 'streak' ? '🔥' :
                    suggestion.type === 'morning' ? '🌅' : '💡'}
                 </Text>
-                <Text style={{ color: COLORS.textSecondary, fontSize: FONT_SIZE.sm, flex: 1, lineHeight: 20 }}>
+                <Text style={{ color: '#A0A0C0', fontSize: 12, flex: 1, lineHeight: 20 }}>
                   {suggestion.message}
                 </Text>
               </View>
@@ -155,40 +155,40 @@ export default function AIReportScreen() {
         {/* Report */}
         {loading ? (
           <View style={{ alignItems: 'center', paddingTop: 40 }}>
-            <ActivityIndicator color={COLORS.primary} size="large" />
-            <Text style={{ color: COLORS.textSecondary, marginTop: 12 }}>Loading report...</Text>
+            <ActivityIndicator color={'#6366F1'} size="large" />
+            <Text style={{ color: '#A0A0C0', marginTop: 12 }}>Loading report...</Text>
           </View>
         ) : report ? (
           <Animated.View entering={FadeInDown.delay(100).duration(500)}>
             {/* Score overview */}
             <LinearGradient
-              colors={GRADIENTS.primary}
-              style={{ borderRadius: BORDER_RADIUS.xl, padding: 20, marginBottom: 16 }}
+              colors={['#6366F1','#8B5CF6']}
+              style={{ borderRadius: 20, padding: 20, marginBottom: 16 }}
             >
               <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'flex-start' }}>
                 <View>
-                  <Text style={{ color: 'rgba(255,255,255,0.7)', fontSize: FONT_SIZE.sm }}>
+                  <Text style={{ color: 'rgba(255,255,255,0.7)', fontSize: 12 }}>
                     {activeType.charAt(0).toUpperCase() + activeType.slice(1)} Life Score
                   </Text>
                   <Text style={{ color: '#fff', fontSize: 48, fontWeight: '800', lineHeight: 52 }}>
                     {report.lifeScore}
                   </Text>
-                  <Text style={{ color: 'rgba(255,255,255,0.7)', fontSize: FONT_SIZE.xs, marginTop: 4 }}>
+                  <Text style={{ color: 'rgba(255,255,255,0.7)', fontSize: 11, marginTop: 4 }}>
                     {report.period?.start} — {report.period?.end}
                   </Text>
                 </View>
                 <View style={{ alignItems: 'flex-end', gap: 8 }}>
                   <View style={{ alignItems: 'flex-end' }}>
-                    <Text style={{ color: '#fff', fontSize: FONT_SIZE.xl, fontWeight: '700' }}>
+                    <Text style={{ color: '#fff', fontSize: 20, fontWeight: '700' }}>
                       {report.summary?.completionRate?.toFixed(0)}%
                     </Text>
-                    <Text style={{ color: 'rgba(255,255,255,0.7)', fontSize: FONT_SIZE.xs }}>Completion</Text>
+                    <Text style={{ color: 'rgba(255,255,255,0.7)', fontSize: 11 }}>Completion</Text>
                   </View>
                   <View style={{ alignItems: 'flex-end' }}>
-                    <Text style={{ color: '#fff', fontSize: FONT_SIZE.xl, fontWeight: '700' }}>
+                    <Text style={{ color: '#fff', fontSize: 20, fontWeight: '700' }}>
                       +{report.summary?.xpEarned} XP
                     </Text>
-                    <Text style={{ color: 'rgba(255,255,255,0.7)', fontSize: FONT_SIZE.xs }}>Earned</Text>
+                    <Text style={{ color: 'rgba(255,255,255,0.7)', fontSize: 11 }}>Earned</Text>
                   </View>
                 </View>
               </View>
@@ -198,8 +198,8 @@ export default function AIReportScreen() {
             {report.aiSummary && (
               <View
                 style={{
-                  backgroundColor: COLORS.surface,
-                  borderRadius: BORDER_RADIUS.xl,
+                  backgroundColor: '#1E1E3A',
+                  borderRadius: 20,
                   padding: 20,
                   marginBottom: 16,
                   borderWidth: 1,
@@ -208,11 +208,11 @@ export default function AIReportScreen() {
               >
                 <View style={{ flexDirection: 'row', alignItems: 'center', gap: 10, marginBottom: 12 }}>
                   <Text style={{ fontSize: 24 }}>🤖</Text>
-                  <Text style={{ color: COLORS.textPrimary, fontSize: FONT_SIZE.base, fontWeight: '700' }}>
+                  <Text style={{ color: '#FFFFFF', fontSize: 14, fontWeight: '700' }}>
                     AI Analysis
                   </Text>
                 </View>
-                <Text style={{ color: COLORS.textSecondary, fontSize: FONT_SIZE.base, lineHeight: 24 }}>
+                <Text style={{ color: '#A0A0C0', fontSize: 14, lineHeight: 24 }}>
                   {report.aiSummary}
                 </Text>
               </View>
@@ -221,13 +221,13 @@ export default function AIReportScreen() {
             {/* Stats breakdown */}
             <View
               style={{
-                backgroundColor: COLORS.surface,
-                borderRadius: BORDER_RADIUS.xl,
+                backgroundColor: '#1E1E3A',
+                borderRadius: 20,
                 padding: 16,
                 marginBottom: 16,
               }}
             >
-              <Text style={{ color: COLORS.textPrimary, fontSize: FONT_SIZE.base, fontWeight: '700', marginBottom: 14 }}>
+              <Text style={{ color: '#FFFFFF', fontSize: 14, fontWeight: '700', marginBottom: 14 }}>
                 Period Stats
               </Text>
               {[
@@ -246,14 +246,14 @@ export default function AIReportScreen() {
                     alignItems: 'center',
                     paddingVertical: 10,
                     borderBottomWidth: 0.5,
-                    borderBottomColor: COLORS.border,
+                    borderBottomColor: '#2D2D5A',
                   }}
                 >
                   <View style={{ flexDirection: 'row', alignItems: 'center', gap: 10 }}>
                     <Text style={{ fontSize: 18 }}>{stat.emoji}</Text>
-                    <Text style={{ color: COLORS.textSecondary, fontSize: FONT_SIZE.base }}>{stat.label}</Text>
+                    <Text style={{ color: '#A0A0C0', fontSize: 14 }}>{stat.label}</Text>
                   </View>
-                  <Text style={{ color: COLORS.textPrimary, fontSize: FONT_SIZE.base, fontWeight: '600' }}>
+                  <Text style={{ color: '#FFFFFF', fontSize: 14, fontWeight: '600' }}>
                     {stat.value}
                   </Text>
                 </View>
@@ -263,17 +263,17 @@ export default function AIReportScreen() {
         ) : (
           <Animated.View entering={FadeInDown.delay(100).duration(400)} style={{ alignItems: 'center', paddingTop: 40 }}>
             <Text style={{ fontSize: 64, marginBottom: 16 }}>🤖</Text>
-            <Text style={{ color: COLORS.textPrimary, fontSize: FONT_SIZE.xl, fontWeight: '700', marginBottom: 8, textAlign: 'center' }}>
+            <Text style={{ color: '#FFFFFF', fontSize: 20, fontWeight: '700', marginBottom: 8, textAlign: 'center' }}>
               No {activeType} report yet
             </Text>
-            <Text style={{ color: COLORS.textSecondary, fontSize: FONT_SIZE.base, textAlign: 'center', marginBottom: 32 }}>
+            <Text style={{ color: '#A0A0C0', fontSize: 14, textAlign: 'center', marginBottom: 32 }}>
               Generate your AI-powered insights for this {activeType}
             </Text>
             <Button
               title={`Generate ${activeType.charAt(0).toUpperCase() + activeType.slice(1)} Report`}
               onPress={handleGenerate}
               loading={generating}
-              gradient={GRADIENTS.primary}
+              gradient={['#6366F1','#8B5CF6']}
               size="lg"
             />
           </Animated.View>
