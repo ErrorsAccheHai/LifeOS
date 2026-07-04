@@ -2,19 +2,28 @@ const Activity = require('../models/Activity');
 const ActivityLog = require('../models/ActivityLog');
 const User = require('../models/User');
 const XPLog = require('../models/XPLog');
-const { sendSuccess, sendError, sendPaginated } = require('../utils/apiResponse');
+const { sendSuccess, sendError } = require('../utils/apiResponse');
 const { calculateLevel } = require('../utils/xpCalculator');
+const ActivityService = require('../services/ActivityService');
+const logger = require('../utils/logger');
 
-// @route   GET /api/activities
+// @route   GET /api/activities?page=1&limit=50&category=health&enabled=true
 const getActivities = async (req, res, next) => {
   try {
-    const { category, enabled } = req.query;
-    const filter = { user: req.user._id };
-    if (category) filter.category = category;
-    if (enabled !== undefined) filter.isEnabled = enabled === 'true';
+    const { category, enabled, page = 1, limit = 50 } = req.query;
+    
+    const result = await ActivityService.getActivitiesWithPagination(req.user._id, {
+      category,
+      enabled,
+      page: parseInt(page),
+      limit: parseInt(limit),
+    });
 
-    const activities = await Activity.find(filter).sort({ order: 1, scheduledTime: 1 });
-    return sendSuccess(res, { activities });
+    if (!result.success) {
+      return sendError(res, result.error, result.statusCode);
+    }
+
+    return sendSuccess(res, result.data);
   } catch (error) {
     next(error);
   }
@@ -87,26 +96,13 @@ const deleteActivity = async (req, res, next) => {
 // @route   POST /api/activities/:id/duplicate
 const duplicateActivity = async (req, res, next) => {
   try {
-    const original = await Activity.findOne({ _id: req.params.id, user: req.user._id });
-    if (!original) return sendError(res, 'Activity not found.', 404);
+    const result = await ActivityService.duplicateActivity(req.user._id, req.params.id);
 
-    const duplicate = await Activity.create({
-      user: req.user._id,
-      name: `${original.name} (Copy)`,
-      icon: original.icon,
-      color: original.color,
-      category: original.category,
-      description: original.description,
-      scheduledTime: original.scheduledTime,
-      estimatedDuration: original.estimatedDuration,
-      repeatSchedule: original.repeatSchedule,
-      xpReward: original.xpReward,
-      priority: original.priority,
-      reminder: original.reminder,
-      isDefault: false,
-    });
+    if (!result.success) {
+      return sendError(res, result.error, result.statusCode);
+    }
 
-    return sendSuccess(res, { activity: duplicate }, 'Activity duplicated', 201);
+    return sendSuccess(res, result.data, result.message, 201);
   } catch (error) {
     next(error);
   }
@@ -117,91 +113,40 @@ const getDayLogs = async (req, res, next) => {
   try {
     const date = req.query.date || new Date().toISOString().split('T')[0];
 
-    const logs = await ActivityLog.find({
-      user: req.user._id,
-      date,
-    }).populate('activity');
+    const result = await ActivityService.getTodayActivityLogs(req.user._id, date);
 
-    return sendSuccess(res, { logs, date });
+    if (!result.success) {
+      return sendError(res, result.error, result.statusCode);
+    }
+
+    return sendSuccess(res, result.data);
   } catch (error) {
     next(error);
   }
 };
 
 // @route   POST /api/activities/logs/:id/complete
+// ✅ FIXED: Atomic operation prevents race condition and double XP
 const completeActivity = async (req, res, next) => {
   try {
     const { notes, mood, rating, actualDuration } = req.body;
     const date = req.query.date || new Date().toISOString().split('T')[0];
 
-    const activity = await Activity.findOne({ _id: req.params.id, user: req.user._id });
-    if (!activity) return sendError(res, 'Activity not found.', 404);
+    const logData = { notes, mood, rating };
+    if (actualDuration) logData.actualDuration = actualDuration;
 
-    let log = await ActivityLog.findOne({ user: req.user._id, activity: req.params.id, date });
+    const result = await ActivityService.completeActivityAtomic(
+      req.user._id,
+      req.params.id,
+      date,
+      logData
+    );
 
-    const user = await User.findById(req.user._id);
-    const levelBefore = user.level;
-    const xpBefore = user.xp;
-
-    if (log) {
-      if (log.status === 'completed') {
-        return sendError(res, 'Activity already completed for today.', 400);
-      }
-      log.status = 'completed';
-      log.completedAt = new Date();
-      log.xpEarned = activity.xpReward;
-      log.notes = notes;
-      log.mood = mood;
-      log.rating = rating;
-      log.actualDuration = actualDuration || activity.estimatedDuration;
-      await log.save();
-    } else {
-      log = await ActivityLog.create({
-        user: req.user._id,
-        activity: req.params.id,
-        date,
-        status: 'completed',
-        completedAt: new Date(),
-        xpEarned: activity.xpReward,
-        notes,
-        mood,
-        rating,
-        actualDuration: actualDuration || activity.estimatedDuration,
-        scheduledTime: activity.scheduledTime,
-      });
+    if (!result.success) {
+      return sendError(res, result.error, result.statusCode);
     }
 
-    // Award XP
-    const newXP = user.xp + activity.xpReward;
-    const levelInfo = calculateLevel(newXP);
-
-    await User.findByIdAndUpdate(req.user._id, {
-      xp: newXP,
-      level: levelInfo.level,
-      totalXPEarned: user.totalXPEarned + activity.xpReward,
-      lastActiveDate: new Date(),
-    });
-
-    await XPLog.create({
-      user: req.user._id,
-      date,
-      amount: activity.xpReward,
-      source: 'activity',
-      sourceId: activity._id,
-      sourceName: activity.name,
-      levelBefore,
-      levelAfter: levelInfo.level,
-      xpBefore,
-      xpAfter: newXP,
-    });
-
-    return sendSuccess(res, {
-      log,
-      xpEarned: activity.xpReward,
-      totalXP: newXP,
-      levelInfo,
-      leveledUp: levelInfo.level > levelBefore,
-    }, 'Activity completed');
+    return sendSuccess(res, result.data, 'Activity completed');
   } catch (error) {
     next(error);
   }
@@ -211,14 +156,19 @@ const completeActivity = async (req, res, next) => {
 const updateLogStatus = async (req, res, next) => {
   try {
     const { status, notes } = req.body;
-    const log = await ActivityLog.findOne({ _id: req.params.logId, user: req.user._id });
-    if (!log) return sendError(res, 'Log not found.', 404);
 
-    log.status = status;
-    if (notes) log.notes = notes;
-    await log.save();
+    const result = await ActivityService.updateActivityStatus(
+      req.user._id,
+      req.params.logId,
+      status,
+      notes
+    );
 
-    return sendSuccess(res, { log }, 'Status updated');
+    if (!result.success) {
+      return sendError(res, result.error, result.statusCode);
+    }
+
+    return sendSuccess(res, result.data, 'Status updated');
   } catch (error) {
     next(error);
   }

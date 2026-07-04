@@ -7,6 +7,7 @@ import { SafeAreaProvider } from 'react-native-safe-area-context';
 import Toast from 'react-native-toast-message';
 import * as SplashScreen from 'expo-splash-screen';
 import { useAuthStore } from '@/store/authStore';
+import { registerForPushNotificationsAsync } from '@/services/notifications';
 import { ThemeProvider, useTheme } from '@/context/ThemeContext';
 
 SplashScreen.preventAutoHideAsync();
@@ -22,7 +23,11 @@ function RootLayoutContent() {
   const { isDark, colors } = useTheme();
 
   useEffect(() => {
-    loadUser().finally(() => SplashScreen.hideAsync());
+    loadUser().finally(async () => {
+      SplashScreen.hideAsync();
+      // Register for push notifications and send token to backend
+      try { await registerForPushNotificationsAsync(); } catch {}
+    });
   }, []);
 
   return (

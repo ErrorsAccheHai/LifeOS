@@ -4,101 +4,41 @@ const XPLog = require('../models/XPLog');
 const DailyScore = require('../models/DailyScore');
 const { sendSuccess, sendError } = require('../utils/apiResponse');
 const { calculateLevel } = require('../utils/xpCalculator');
+const WaterService = require('../services/WaterService');
+const logger = require('../utils/logger');
 
 // @route   POST /api/water/add
+// ✅ FIXED: Prevents double XP award on water goal
 const addWater = async (req, res, next) => {
   try {
     const { amount, source = 'water' } = req.body;
-    if (!amount || amount <= 0) return sendError(res, 'Amount must be positive.', 400);
-
     const date = new Date().toISOString().split('T')[0];
-    const user = await User.findById(req.user._id);
-    const goal = user.goals.waterGoal || 2500;
 
-    let log = await WaterLog.findOne({ user: req.user._id, date });
+    const result = await WaterService.addWaterEntry(req.user._id, amount, source, date);
 
-    const wasGoalAchievedBefore = log?.goalAchieved || false;
-
-    if (log) {
-      log.entries.push({ amount, source, loggedAt: new Date() });
-      log.totalAmount += amount;
-      log.goalAchieved = log.totalAmount >= goal;
-      await log.save();
-    } else {
-      log = await WaterLog.create({
-        user: req.user._id,
-        date,
-        goal,
-        entries: [{ amount, source, loggedAt: new Date() }],
-        totalAmount: amount,
-        goalAchieved: amount >= goal,
-      });
+    if (!result.success) {
+      return sendError(res, result.error, result.statusCode);
     }
 
-    let xpEarned = 0;
-    // Award XP when goal is first achieved
-    if (log.goalAchieved && !wasGoalAchievedBefore) {
-      xpEarned = 15;
-      log.xpEarned = xpEarned;
-      await log.save();
-
-      const newXP = user.xp + xpEarned;
-      const levelInfo = calculateLevel(newXP);
-      await User.findByIdAndUpdate(req.user._id, {
-        xp: newXP,
-        level: levelInfo.level,
-        totalXPEarned: user.totalXPEarned + xpEarned,
-      });
-
-      await XPLog.create({
-        user: req.user._id,
-        date,
-        amount: xpEarned,
-        source: 'daily_goal',
-        sourceName: 'Water Goal Achieved',
-        xpBefore: user.xp,
-        xpAfter: newXP,
-      });
-    }
-
-    // Update daily score water component
-    const waterScore = Math.min((log.totalAmount / goal) * 100, 100);
-    await DailyScore.findOneAndUpdate(
-      { user: req.user._id, date },
-      { waterScore: Math.round(waterScore) },
-      { upsert: true }
-    );
-
-    return sendSuccess(res, {
-      log,
-      xpEarned,
-      goalAchieved: log.goalAchieved,
-      remaining: Math.max(goal - log.totalAmount, 0),
-      percentage: Math.round(waterScore),
-    }, 'Water logged');
+    return sendSuccess(res, result.data, 'Water logged');
   } catch (error) {
     next(error);
   }
 };
 
 // @route   DELETE /api/water/entry/:entryId
+// ✅ FIXED: Properly handles XP reversal when removing entries
 const removeWaterEntry = async (req, res, next) => {
   try {
     const date = new Date().toISOString().split('T')[0];
-    const log = await WaterLog.findOne({ user: req.user._id, date });
-    if (!log) return sendError(res, 'No water log for today.', 404);
 
-    const entry = log.entries.id(req.params.entryId);
-    if (!entry) return sendError(res, 'Entry not found.', 404);
+    const result = await WaterService.removeWaterEntry(req.user._id, req.params.entryId, date);
 
-    log.totalAmount = Math.max(log.totalAmount - entry.amount, 0);
-    entry.deleteOne();
+    if (!result.success) {
+      return sendError(res, result.error, result.statusCode);
+    }
 
-    const user = await User.findById(req.user._id);
-    log.goalAchieved = log.totalAmount >= (user.goals.waterGoal || 2500);
-    await log.save();
-
-    return sendSuccess(res, { log }, 'Entry removed');
+    return sendSuccess(res, result.data, 'Entry removed');
   } catch (error) {
     next(error);
   }
@@ -108,18 +48,14 @@ const removeWaterEntry = async (req, res, next) => {
 const getTodayWater = async (req, res, next) => {
   try {
     const date = new Date().toISOString().split('T')[0];
-    const user = await User.findById(req.user._id);
-    const log = await WaterLog.findOne({ user: req.user._id, date });
-    const goal = user.goals.waterGoal || 2500;
 
-    return sendSuccess(res, {
-      log,
-      goal,
-      totalAmount: log?.totalAmount || 0,
-      remaining: Math.max(goal - (log?.totalAmount || 0), 0),
-      percentage: log ? Math.round(Math.min((log.totalAmount / goal) * 100, 100)) : 0,
-      goalAchieved: log?.goalAchieved || false,
-    });
+    const result = await WaterService.getTodayWaterLog(req.user._id, date);
+
+    if (!result.success) {
+      return sendError(res, result.error, result.statusCode);
+    }
+
+    return sendSuccess(res, result.data);
   } catch (error) {
     next(error);
   }

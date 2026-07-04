@@ -7,6 +7,7 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useRouter } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
+import * as ImagePicker from 'expo-image-picker';
 import { useForm, Controller } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
@@ -83,6 +84,41 @@ export default function EditProfileScreen() {
     }
   };
 
+  const handlePickImage = async () => {
+    try {
+      // ask permissions
+      if (Platform.OS !== 'web') {
+        const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
+        if (status !== 'granted') {
+          Toast.show({ type: 'error', text1: 'Permission required', text2: 'Allow access to photos to change avatar.' });
+          return;
+        }
+      }
+
+      const res = await ImagePicker.launchImageLibraryAsync({ mediaTypes: ImagePicker.MediaTypeOptions.Images, quality: 0.8 });
+      if (res.cancelled) return;
+      const uri = res.assets?.[0]?.uri || (res as any).uri;
+      if (!uri) return;
+
+      const formData = new FormData();
+      const filename = uri.split('/').pop() || 'avatar.jpg';
+      const match = /\.(\w+)$/.exec(filename);
+      const type = match ? `image/${match[1]}` : 'image/jpeg';
+      // @ts-ignore
+      formData.append('avatar', { uri, name: filename, type });
+
+      setLoading(true);
+      const response = await api.post(ENDPOINTS.USERS.AVATAR, formData, { headers: { 'Content-Type': 'multipart/form-data' } });
+      const avatar = response.data.data.avatar;
+      updateUser({ ...user, avatar });
+      Toast.show({ type: 'success', text1: '✅ Avatar updated' });
+    } catch (e: any) {
+      Toast.show({ type: 'error', text1: 'Upload failed', text2: e.response?.data?.message || e.message || 'Failed' });
+    } finally {
+      setLoading(false);
+    }
+  };
+
   const SelectRow = ({ options, selected, onSelect }: any) => (
     <View style={{ flexDirection: 'row', gap: 10, marginBottom: 20 }}>
       {options.map((opt: any) => (
@@ -130,10 +166,12 @@ export default function EditProfileScreen() {
         </View>
 
         {/* Avatar */}
-        <Animated.View entering={FadeInDown.delay(100).duration(400)} style={{ alignItems: 'center', marginTop: 20 }}>
+          <Animated.View entering={FadeInDown.delay(100).duration(400)} style={{ alignItems: 'center', marginTop: 20 }}>
           <View style={{ position: 'relative' }}>
             {user?.avatar ? (
-              <Image source={{ uri: user.avatar }} style={{ width: 80, height: 80, borderRadius: 40 }} />
+              <TouchableOpacity onPress={handlePickImage} activeOpacity={0.8}>
+                <Image source={{ uri: user.avatar }} style={{ width: 80, height: 80, borderRadius: 40 }} />
+              </TouchableOpacity>
             ) : (
               <LinearGradient colors={['#6366F1', '#8B5CF6']} style={{ width: 80, height: 80, borderRadius: 40, alignItems: 'center', justifyContent: 'center' }}>
                 <Text style={{ color: '#fff', fontSize: 32, fontWeight: '700' }}>
@@ -142,6 +180,7 @@ export default function EditProfileScreen() {
               </LinearGradient>
             )}
             <TouchableOpacity
+              onPress={handlePickImage}
               style={{ position: 'absolute', bottom: 0, right: 0, width: 28, height: 28, borderRadius: 14, backgroundColor: colors.primary, alignItems: 'center', justifyContent: 'center', borderWidth: 2, borderColor: colors.background }}
             >
               <Ionicons name="camera" size={13} color="#fff" />

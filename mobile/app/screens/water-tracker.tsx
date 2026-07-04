@@ -87,7 +87,7 @@ export default function WaterTrackerScreen() {
           >
             <Ionicons name="chevron-down" size={22} color="#fff" />
           </TouchableOpacity>
-          <Text style={{ color: '#fff', fontSize: FONT_SIZE.lg, fontWeight: '700' }}>
+          <Text style={{ color: '#fff', fontSize: 18, fontWeight: '700' }}>
             Water Tracker 💧
           </Text>
           <View style={{ width: 40 }} />
@@ -104,10 +104,10 @@ export default function WaterTrackerScreen() {
           >
             <View style={{ alignItems: 'center' }}>
               <Text style={{ fontSize: 36 }}>💧</Text>
-              <Text style={{ color: '#fff', fontSize: FONT_SIZE['2xl'], fontWeight: '800', marginTop: 4 }}>
+              <Text style={{ color: '#fff', fontSize: 24, fontWeight: '800', marginTop: 4 }}>
                 {Math.round(totalAmount / 100) / 10}L
               </Text>
-              <Text style={{ color: 'rgba(255,255,255,0.7)', fontSize: FONT_SIZE.xs }}>
+              <Text style={{ color: 'rgba(255,255,255,0.7)', fontSize: 11 }}>
                 of {goal / 1000}L goal
               </Text>
             </View>
@@ -115,24 +115,24 @@ export default function WaterTrackerScreen() {
 
           <View style={{ flexDirection: 'row', gap: 24, marginTop: 20 }}>
             <View style={{ alignItems: 'center' }}>
-              <Text style={{ color: '#06B6D4', fontSize: FONT_SIZE.lg, fontWeight: '700' }}>
+              <Text style={{ color: '#06B6D4', fontSize: 18, fontWeight: '700' }}>
                 {Math.round(remaining / 100) / 10}L
               </Text>
-              <Text style={{ color: 'rgba(255,255,255,0.6)', fontSize: FONT_SIZE.xs }}>Remaining</Text>
+              <Text style={{ color: 'rgba(255,255,255,0.6)', fontSize: 11 }}>Remaining</Text>
             </View>
             <View style={{ width: 1, backgroundColor: 'rgba(255,255,255,0.1)' }} />
             <View style={{ alignItems: 'center' }}>
-              <Text style={{ color: goalAchieved ? '#10B981' : 'rgba(255,255,255,0.8)', fontSize: FONT_SIZE.lg, fontWeight: '700' }}>
+              <Text style={{ color: goalAchieved ? '#10B981' : 'rgba(255,255,255,0.8)', fontSize: 18, fontWeight: '700' }}>
                 {goalAchieved ? '✅ Done' : `${percentage}%`}
               </Text>
-              <Text style={{ color: 'rgba(255,255,255,0.6)', fontSize: FONT_SIZE.xs }}>Progress</Text>
+              <Text style={{ color: 'rgba(255,255,255,0.6)', fontSize: 11 }}>Progress</Text>
             </View>
             <View style={{ width: 1, backgroundColor: 'rgba(255,255,255,0.1)' }} />
             <View style={{ alignItems: 'center' }}>
-              <Text style={{ color: 'rgba(255,255,255,0.8)', fontSize: FONT_SIZE.lg, fontWeight: '700' }}>
+              <Text style={{ color: 'rgba(255,255,255,0.8)', fontSize: 18, fontWeight: '700' }}>
                 {todayLog?.entries?.length || 0}
               </Text>
-              <Text style={{ color: 'rgba(255,255,255,0.6)', fontSize: FONT_SIZE.xs }}>Entries</Text>
+              <Text style={{ color: 'rgba(255,255,255,0.6)', fontSize: 11 }}>Entries</Text>
             </View>
           </View>
         </Animated.View>

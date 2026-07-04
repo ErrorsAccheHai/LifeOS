@@ -17,6 +17,7 @@ import { ENDPOINTS } from '@/constants/api';
 import LifeScoreCard from '@/components/cards/LifeScoreCard';
 import QuickStatCard from '@/components/cards/QuickStatCard';
 import ActivityTimelineCard from '@/components/cards/ActivityTimelineCard';
+import { Logo } from '@/components/ui/Logo';
 import { useTheme } from '@/context/ThemeContext';
 import type { TimelineItem } from '@/types';
 
@@ -95,9 +96,10 @@ export default function HomeScreen() {
         refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} tintColor={colors.primary} />}
       >
         {/* ── Header ── */}
-        <View style={s.header}>
-          <View>
-            <Text style={[s.greeting, { color: colors.textSecondary }]}>{getGreeting()} 👋</Text>
+        <View style={[s.header, { marginBottom: 24 }]}>
+          <View style={{ flex: 1 }}>
+            <Logo size="small" showText={true} />
+            <Text style={[s.greeting, { color: colors.textSecondary, marginTop: 12 }]}>{getGreeting()} 👋</Text>
             <Text style={[s.name, { color: colors.textPrimary }]}>{firstName}</Text>
           </View>
           <View style={s.headerRight}>

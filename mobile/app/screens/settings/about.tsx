@@ -83,7 +83,7 @@ export default function AboutScreen() {
           <LinearGradient colors={['#6366F1','#8B5CF6']} style={{ width: 80, height: 80, borderRadius: 24, alignItems: 'center', justifyContent: 'center', marginBottom: 16 }}>
             <Text style={{ fontSize: 40 }}>⚡</Text>
           </LinearGradient>
-          <Text style={{ color: '#FFFFFF', fontSize: FONT_SIZE['2xl'], fontWeight: '800', letterSpacing: -0.5 }}>LifeOS</Text>
+          <Text style={{ color: '#FFFFFF', fontSize: 24, fontWeight: '800', letterSpacing: -0.5 }}>LifeOS</Text>
           <Text style={{ color: '#606080', fontSize: 12, marginTop: 4 }}>Version {VERSION} (Build {BUILD})</Text>
           <Text style={{ color: '#A0A0C0', fontSize: 11, marginTop: 8, textAlign: 'center', lineHeight: 18 }}>
             Your personal life operating system.{'\n'}Track, improve, and achieve every day.
@@ -120,12 +120,12 @@ export default function AboutScreen() {
             <RowItem
               icon="shield-checkmark-outline"
               label="Privacy Policy"
-              onPress={() => openLink('https://github.com/ErrorsAccheHai/LifeOS')}
+              onPress={() => router.push('/screens/settings/privacy')}
             />
             <RowItem
               icon="document-text-outline"
               label="Terms of Service"
-              onPress={() => openLink('https://github.com/ErrorsAccheHai/LifeOS')}
+              onPress={() => router.push('/screens/settings/terms')}
             />
             <RowItem
               icon="library-outline"

@@ -314,7 +314,7 @@ export default function OnboardingScreen() {
         return (
           <Animated.View entering={FadeInDown.duration(400)} key="ready" style={{ alignItems: 'center', paddingTop: 20 }}>
             <Text style={{ fontSize: 80, marginBottom: 24 }}>🎉</Text>
-            <Text style={{ color: '#FFFFFF', fontSize: FONT_SIZE['2xl'], fontWeight: '700', textAlign: 'center', marginBottom: 12 }}>
+            <Text style={{ color: '#FFFFFF', fontSize: 24, fontWeight: '700', textAlign: 'center', marginBottom: 12 }}>
               Your LifeOS is Ready!
             </Text>
             <Text style={{ color: '#A0A0C0', fontSize: 14, textAlign: 'center', lineHeight: 26 }}>
@@ -378,7 +378,7 @@ export default function OnboardingScreen() {
           {/* Step header */}
           <View style={{ marginBottom: 32 }}>
             <Text style={{ fontSize: 40, marginBottom: 12 }}>{currentStep.emoji}</Text>
-            <Text style={{ color: '#FFFFFF', fontSize: FONT_SIZE['2xl'], fontWeight: '700', marginBottom: 6 }}>
+            <Text style={{ color: '#FFFFFF', fontSize: 24, fontWeight: '700', marginBottom: 6 }}>
               {currentStep.title}
             </Text>
             <Text style={{ color: '#A0A0C0', fontSize: 14 }}>
